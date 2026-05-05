@@ -24,6 +24,95 @@
             --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
+
+
+
+
+/* --- MOBILE RESPONSIVE OPTIMIZATION --- */
+@media (max-width: 768px) {
+    /* 1. Top Bar (Font Choto kora hoyeche) */
+    .top-bar {
+        flex-direction: column;
+        text-align: center;
+        padding: 5px 5%;
+        font-size: 11px; /* Aro choto kora holo */
+        gap: 3px;
+    }
+
+    /* 2. Main Header (Logo & Padding) */
+    header {
+        padding: 10px 5%; /* Padding komano holo */
+    }
+    .logo {
+        font-size: 20px; /* Logo size mobile-er jonne optimized */
+    }
+    .nav-btns {
+        gap: 10px;
+    }
+    .btn-p {
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+    }
+
+    /* 3. Hero Section (Banner height & Font size) */
+    .hero {
+        height: auto; /* Fixed height bad diye content onujayi barbe */
+        min-height: 70vh; /* Banner-er height komano holo */
+        padding: 100px 5% 60px; /* Hero-te upore niche space dewa holo */
+    }
+    .hero-box h1 {
+        font-size: 26px; /* Heading boro dakhale ata perfect hobe */
+        line-height: 1.3;
+        margin-bottom: 15px;
+    }
+    .hero-box p {
+        font-size: 14px; /* Paragraph size komano holo */
+        margin-bottom: 25px;
+        padding: 0 10px;
+    }
+    .hero-btns {
+        flex-direction: column; /* Button gulo upore niche thakbe mobile-e */
+        gap: 12px;
+    }
+    .btn {
+        width: 100%; /* Mobile-e button full width hobe */
+        padding: 12px 20px;
+    }
+
+    /* 4. Other Sections */
+    section {
+        padding: 50px 5%; /* Section padding komano holo */
+    }
+    .v-title h2 {
+        font-size: 26px;
+    }
+    .about-wrap, .split-sec, .srv-grid, .plan-grid {
+        grid-template-columns: 1fr; /* Single column layout */
+    }
+    .counter-sec {
+        grid-template-columns: 1fr 1fr; /* Counter 2 line-e thakbe */
+        gap: 20px;
+    }
+    .count-box h2 {
+        font-size: 30px;
+    }
+}
+
+/* Choto Phone-er jonne (iPhone SE/Small android) */
+@media (max-width: 480px) {
+    .hero-box h1 {
+        font-size: 22px;
+    }
+    .logo {
+        font-size: 18px;
+    }
+}
+
+
+
+
+        
+
         /* --- GLOBAL STYLES --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--bg-light); overflow-x: hidden; }

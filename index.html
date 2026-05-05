@@ -12,230 +12,184 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <style>
-        :root {
-            --primary: #2874f0; 
-            --primary-dark: #1c54b2;
-            --secondary: #fb641b;
-            --accent: #ff9f00;
-            --bg-light: #f1f3f6;
-            --text-dark: #212121;
-            --text-muted: #666;
-            --white: #ffffff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+:root {
+    --primary: #2874f0; 
+    --primary-dark: #1c54b2;
+    --secondary: #fb641b;
+    --accent: #ff9f00;
+    --bg-light: #f1f3f6;
+    --text-dark: #212121;
+    --text-muted: #666;
+    --white: #ffffff;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
+/* --- GLOBAL STYLES --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--bg-light); overflow-x: hidden; }
+h1, h2, h3, h4, .logo { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+a { text-decoration: none; transition: 0.3s; }
+ul { list-style: none; }
+section { padding: 80px 8%; position: relative; }
+.container { max-width: 1300px; margin: auto; }
 
+/* --- HEADER & TOP BAR (Desktop Default) --- */
+.top-bar { background: var(--primary-dark); color: white; padding: 8px 8%; font-size: 13px; display: flex; justify-content: space-between; }
+header { background: var(--primary); padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow); }
+.logo { font-size: 28px; color: white; letter-spacing: 1px; cursor: pointer; }
+.logo span { color: var(--accent); }
+nav ul { display: flex; gap: 25px; }
+nav ul li a { color: white; font-weight: 600; font-size: 14px; text-transform: uppercase; }
+nav ul li a:hover { color: var(--accent); }
+.nav-btns { display: flex; align-items: center; gap: 20px; }
+.gear-btn { color: white; font-size: 20px; cursor: pointer; transition: 0.6s; }
+.gear-btn:hover { transform: rotate(180deg); color: var(--accent); }
 
+/* --- HERO SECTION (Desktop Default) --- */
+.hero { 
+    height: 90vh; 
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop'); 
+    background-size: cover; 
+    background-position: center; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    text-align: center; 
+    color: white; 
+}
+.hero-box h1 { font-size: 55px; margin-bottom: 20px; line-height: 1.2; }
+.hero-box p { font-size: 18px; margin-bottom: 35px; max-width: 850px; margin-inline: auto; opacity: 0.9; }
+.hero-btns { display: flex; justify-content: center; gap: 20px; }
+.btn { padding: 15px 40px; border-radius: 4px; font-weight: 700; cursor: pointer; border: none; text-transform: uppercase; font-size: 14px; transition: 0.4s; display: inline-block; }
+.btn-p { background: var(--secondary); color: white; }
+.btn-p:hover { background: #e35a17; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(251, 100, 27, 0.3); }
+.btn-s { background: var(--white); color: var(--primary); }
 
+/* --- SECTION TITLES --- */
+.v-title { text-align: center; margin-bottom: 60px; }
+.v-title h2 { font-size: 36px; position: relative; display: inline-block; padding-bottom: 15px; }
+.v-title h2::after { content: ''; position: absolute; width: 60%; height: 4px; background: var(--secondary); bottom: 0; left: 20%; border-radius: 2px; }
 
-/* --- MOBILE RESPONSIVE OPTIMIZATION --- */
+/* --- 2. TECH SLIDER --- */
+.tech-slide { background: white; padding: 40px 0; border-bottom: 1px solid #eee; }
+.ts-wrap { overflow: hidden; display: flex; }
+.ts-track { display: flex; gap: 100px; animation: slide 25s linear infinite; align-items: center; }
+@keyframes slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.ts-item { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #444; font-size: 20px; }
+.ts-item i { font-size: 30px; color: var(--primary); }
+
+/* --- 3. ABOUT SECTION --- */
+.about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.about-text h3 { font-size: 28px; margin-bottom: 20px; color: var(--primary); }
+.about-text p { margin-bottom: 15px; color: #444; text-align: justify; }
+.about-img img { width: 100%; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
+
+/* --- 4. LANGUAGE SECTION --- */
+.lang-switcher-box { background: white; border-radius: 15px; padding: 40px; box-shadow: var(--shadow); text-align: center; }
+.lang-btns { margin-bottom: 30px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.btn-lang { padding: 8px 20px; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+.btn-lang.active { background: var(--primary); color: white; }
+.lang-content { min-height: 150px; }
+.lang-content h3 { color: var(--primary); margin-bottom: 15px; font-size: 24px; }
+.lang-content p { font-size: 17px; color: #444; line-height: 1.8; text-align: center; }
+
+/* --- 6. PRICING PLANS --- */
+.plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+.p-box { background: white; border: 1px solid #ddd; border-radius: 10px; padding: 40px 25px; position: relative; transition: 0.4s; overflow: hidden; }
+.p-box.popular { border: 2px solid var(--primary); transform: scale(1.05); z-index: 5; }
+.p-badge { position: absolute; top: 15px; right: -35px; background: var(--secondary); color: white; padding: 5px 40px; transform: rotate(45deg); font-size: 12px; font-weight: 700; }
+.p-box h3 { font-size: 22px; margin-bottom: 10px; text-transform: uppercase; }
+.p-box .price { font-size: 42px; font-weight: 800; color: var(--primary); margin-bottom: 25px; }
+.p-features { text-align: left; margin-bottom: 35px; }
+.p-features li { padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+.p-features i { color: #2ecc71; margin-right: 10px; }
+.p-features .fa-gift { color: var(--secondary); }
+
+/* --- 7. PORTFOLIO --- */
+.port-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.port-item { height: 280px; border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; }
+.port-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+.port-item:hover img { transform: scale(1.1); }
+.port-overlay { position: absolute; inset: 0; background: rgba(40, 116, 240, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; opacity: 0; transition: 0.4s; }
+.port-item:hover .port-overlay { opacity: 1; }
+
+/* --- 8. LEARNING ACADEMY --- */
+.split-sec { display: flex; flex-wrap: wrap; gap: 30px; }
+.split-card { flex: 1; min-width: 300px; background: white; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; }
+.split-content { padding: 40px; }
+.split-content h3 { font-size: 26px; margin-bottom: 20px; color: var(--secondary); }
+
+/* --- 9. COUNTER SECTION --- */
+.counter-sec { background: var(--primary); color: white; display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; padding: 60px 8%; }
+.count-box h2 { font-size: 45px; }
+.count-box p { font-size: 16px; font-weight: 600; opacity: 0.8; }
+
+/* --- 10. REVIEWS & RATING --- */
+.review-container { max-width: 800px; margin: auto; background: white; padding: 50px; border-radius: 15px; box-shadow: var(--shadow); }
+.star-input { font-size: 30px; color: #ddd; cursor: pointer; text-align: center; margin-bottom: 20px; }
+.star-input .active { color: var(--accent); }
+input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px; outline: none; }
+
+/* --- 11. FAQ --- */
+.faq-item { background: white; margin-bottom: 10px; padding: 20px; border-radius: 5px; cursor: pointer; }
+.faq-q { font-weight: 700; display: flex; justify-content: space-between; }
+
+/* --- 12. FOOTER --- */
+footer { background: #172337; color: white; padding: 80px 8% 20px; }
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 50px; text-align: left; }
+.footer-col h4 { color: var(--accent); margin-bottom: 25px; font-size: 18px; text-transform: uppercase; }
+.footer-col p, .footer-col li { font-size: 14px; color: #bdc3c7; margin-bottom: 12px; }
+.footer-col li a { color: #bdc3c7; }
+.footer-col li a:hover { color: white; padding-left: 5px; }
+.social-links { display: flex; gap: 15px; margin-top: 20px; }
+.social-links a { width: 40px; height: 40px; background: #2c3e50; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; }
+.social-links a:hover { background: var(--primary); }
+.copy-right { border-top: 1px solid #2c3e50; padding-top: 25px; text-align: center; font-size: 13px; color: #7f8c8d; }
+
+/* --- MODAL --- */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; }
+.modal-content { background: white; padding: 40px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; }
+
+/* --- POLICY STYLES --- */
+.p-btn { padding: 12px 25px; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 5px; cursor: pointer; font-weight: 700; font-size: 14px; transition: 0.3s; }
+.p-btn:hover, .p-btn.active { background: var(--primary); color: white; }
+.p-content { animation: fadeInUp 0.4s ease; }
+
+/* ======================================================
+   MOBILE RESPONSIVE OPTIMIZATION (Media Queries at End)
+   ====================================================== */
 @media (max-width: 768px) {
-    /* 1. Top Bar (Font Choto kora hoyeche) */
-    .top-bar {
-        flex-direction: column;
-        text-align: center;
-        padding: 5px 5%;
-        font-size: 11px; /* Aro choto kora holo */
-        gap: 3px;
-    }
+    /* Top Bar */
+    .top-bar { flex-direction: column; text-align: center; padding: 5px 5%; font-size: 11px; gap: 3px; }
 
-    /* 2. Main Header (Logo & Padding) */
-    header {
-        padding: 10px 5%; /* Padding komano holo */
-    }
-    .logo {
-        font-size: 20px; /* Logo size mobile-er jonne optimized */
-    }
-    .nav-btns {
-        gap: 10px;
-    }
-    .btn-p {
-        padding: 8px 12px !important;
-        font-size: 11px !important;
-    }
+    /* Header */
+    header { padding: 10px 5%; }
+    nav { display: none; } /* Hide Desktop Nav */
+    .logo { font-size: 20px; }
+    .nav-btns { gap: 10px; }
+    .btn-p { padding: 8px 12px !important; font-size: 11px !important; }
 
-    /* 3. Hero Section (Banner height & Font size) */
-    .hero {
-        height: auto; /* Fixed height bad diye content onujayi barbe */
-        min-height: 70vh; /* Banner-er height komano holo */
-        padding: 100px 5% 60px; /* Hero-te upore niche space dewa holo */
-    }
-    .hero-box h1 {
-        font-size: 26px; /* Heading boro dakhale ata perfect hobe */
-        line-height: 1.3;
-        margin-bottom: 15px;
-    }
-    .hero-box p {
-        font-size: 14px; /* Paragraph size komano holo */
-        margin-bottom: 25px;
-        padding: 0 10px;
-    }
-    .hero-btns {
-        flex-direction: column; /* Button gulo upore niche thakbe mobile-e */
-        gap: 12px;
-    }
-    .btn {
-        width: 100%; /* Mobile-e button full width hobe */
-        padding: 12px 20px;
-    }
+    /* Hero Section */
+    .hero { height: auto; min-height: 70vh; padding: 100px 5% 60px; }
+    .hero-box h1 { font-size: 26px; line-height: 1.3; margin-bottom: 15px; }
+    .hero-box p { font-size: 14px; margin-bottom: 25px; padding: 0 10px; }
+    .hero-btns { flex-direction: column; gap: 12px; }
+    .btn { width: 100%; padding: 12px 20px; }
 
-    /* 4. Other Sections */
-    section {
-        padding: 50px 5%; /* Section padding komano holo */
-    }
-    .v-title h2 {
-        font-size: 26px;
-    }
-    .about-wrap, .split-sec, .srv-grid, .plan-grid {
-        grid-template-columns: 1fr; /* Single column layout */
-    }
-    .counter-sec {
-        grid-template-columns: 1fr 1fr; /* Counter 2 line-e thakbe */
-        gap: 20px;
-    }
-    .count-box h2 {
-        font-size: 30px;
-    }
+    /* General Sections */
+    section { padding: 50px 5%; }
+    .v-title h2 { font-size: 26px; }
+    .about-wrap, .split-sec, .srv-grid, .plan-grid, .port-grid, .choose-grid { grid-template-columns: 1fr; }
+    
+    /* Counter */
+    .counter-sec { grid-template-columns: 1fr 1fr; gap: 20px; padding: 40px 5%; }
+    .count-box h2 { font-size: 30px; }
 }
 
-/* Choto Phone-er jonne (iPhone SE/Small android) */
 @media (max-width: 480px) {
-    .hero-box h1 {
-        font-size: 22px;
-    }
-    .logo {
-        font-size: 18px;
-    }
+    .hero-box h1 { font-size: 22px; }
+    .logo { font-size: 18px; }
 }
-
-
-
-
-        
-
-        /* --- GLOBAL STYLES --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--bg-light); overflow-x: hidden; }
-        h1, h2, h3, h4, .logo { font-family: 'Montserrat', sans-serif; font-weight: 700; }
-        a { text-decoration: none; transition: 0.3s; }
-        ul { list-style: none; }
-        section { padding: 80px 8%; position: relative; }
-        .container { max-width: 1300px; margin: auto; }
-
-       
-
-        /* --- 2. TECH SLIDER --- */
-        .tech-slide { background: white; padding: 40px 0; border-bottom: 1px solid #eee; }
-        .ts-wrap { overflow: hidden; display: flex; }
-        .ts-track { display: flex; gap: 100px; animation: slide 25s linear infinite; align-items: center; }
-        @keyframes slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .ts-item { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #444; font-size: 20px; }
-        .ts-item i { font-size: 30px; color: var(--primary); }
-
-        /* --- 3. ABOUT SECTION --- */
-        .about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        .about-text h3 { font-size: 28px; margin-bottom: 20px; color: var(--primary); }
-        .about-text p { margin-bottom: 15px; color: #444; text-align: justify; }
-        .about-img img { width: 100%; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
-
-        /* --- 4. LANGUAGE SECTION --- */
-        .lang-switcher-box { background: white; border-radius: 15px; padding: 40px; box-shadow: var(--shadow); text-align: center; }
-        .lang-btns { margin-bottom: 30px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .btn-lang { padding: 8px 20px; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .btn-lang.active { background: var(--primary); color: white; }
-        .lang-content { min-height: 150px; }
-        .lang-content h3 { color: var(--primary); margin-bottom: 15px; font-size: 24px; }
-        .lang-content p { font-size: 17px; color: #444; line-height: 1.8; text-align: center; }
-
-        /* --- 6. PRICING PLANS --- */
-        .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
-        .p-box { background: white; border: 1px solid #ddd; border-radius: 10px; padding: 40px 25px; position: relative; transition: 0.4s; overflow: hidden; }
-        .p-box.popular { border: 2px solid var(--primary); transform: scale(1.05); z-index: 5; }
-        .p-badge { position: absolute; top: 15px; right: -35px; background: var(--secondary); color: white; padding: 5px 40px; transform: rotate(45deg); font-size: 12px; font-weight: 700; }
-        .p-box h3 { font-size: 22px; margin-bottom: 10px; text-transform: uppercase; }
-        .p-box .price { font-size: 42px; font-weight: 800; color: var(--primary); margin-bottom: 25px; }
-        .p-features { text-align: left; margin-bottom: 35px; }
-        .p-features li { padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
-        .p-features i { color: #2ecc71; margin-right: 10px; }
-        .p-features .fa-gift { color: var(--secondary); }
-
-        /* --- 7. PORTFOLIO --- */
-        .port-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .port-item { height: 280px; border-radius: 8px; overflow: hidden; position: relative; cursor: pointer; }
-        .port-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .port-item:hover img { transform: scale(1.1); }
-        .port-overlay { position: absolute; inset: 0; background: rgba(40, 116, 240, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; opacity: 0; transition: 0.4s; }
-        .port-item:hover .port-overlay { opacity: 1; }
-
-        /* --- 8. LEARNING ACADEMY --- */
-        .split-sec { display: flex; flex-wrap: wrap; gap: 30px; }
-        .split-card { flex: 1; min-width: 300px; background: white; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; }
-        .split-content { padding: 40px; }
-        .split-content h3 { font-size: 26px; margin-bottom: 20px; color: var(--secondary); }
-
-        /* --- 9. COUNTER SECTION --- */
-        .counter-sec { background: var(--primary); color: white; display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; padding: 60px 8%; }
-        .count-box h2 { font-size: 45px; }
-        .count-box p { font-size: 16px; font-weight: 600; opacity: 0.8; }
-
-        /* --- 10. REVIEWS & RATING --- */
-        .review-container { max-width: 800px; margin: auto; background: white; padding: 50px; border-radius: 15px; box-shadow: var(--shadow); }
-        .star-input { font-size: 30px; color: #ddd; cursor: pointer; text-align: center; margin-bottom: 20px; }
-        .star-input .active { color: var(--accent); }
-        input, textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px; outline: none; }
-
-        /* --- 11. FAQ --- */
-        .faq-item { background: white; margin-bottom: 10px; padding: 20px; border-radius: 5px; cursor: pointer; }
-        .faq-q { font-weight: 700; display: flex; justify-content: space-between; }
-
-        /* --- 12. FOOTER --- */
-        footer { background: #172337; color: white; padding: 80px 8% 20px; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 50px; text-align: left; }
-        .footer-col h4 { color: var(--accent); margin-bottom: 25px; font-size: 18px; text-transform: uppercase; }
-        .footer-col p, .footer-col li { font-size: 14px; color: #bdc3c7; margin-bottom: 12px; }
-        .footer-col li a { color: #bdc3c7; }
-        .footer-col li a:hover { color: white; padding-left: 5px; }
-        .social-links { display: flex; gap: 15px; margin-top: 20px; }
-        .social-links a { width: 40px; height: 40px; background: #2c3e50; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: white; }
-        .social-links a:hover { background: var(--primary); }
-        .copy-right { border-top: 1px solid #2c3e50; padding-top: 25px; text-align: center; font-size: 13px; color: #7f8c8d; }
-
-        /* --- MODAL --- */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 40px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; }
-
-        /* --- MOBILE RESPONSIVE --- */
-        @media (max-width: 768px) {
-            header { padding: 15px 5%; }
-            nav { display: none; }
-            .hero-box h1 { font-size: 32px; }
-            .about-wrap, .split-sec { grid-template-columns: 1fr; }
-            .counter-sec { grid-template-columns: 1fr 1fr; gap: 30px; }
-            section { padding: 60px 5%; }
-        }
-
-
-/* Policies Styles */
-.p-btn {
-    padding: 12px 25px;
-    border: 2px solid var(--primary);
-    background: transparent;
-    color: var(--primary);
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 14px;
-    transition: 0.3s;
-}
-.p-btn:hover, .p-btn.active {
-    background: var(--primary);
-    color: white;
-}
-.p-content {
-    animation: fadeInUp 0.4s ease;
-}
-
-
     </style>
 
 

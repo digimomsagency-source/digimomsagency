@@ -3,21 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DigiMoms | Sabang's Premium Web Development & Digital Marketing Agency</title>
-    
-    <!-- Speed Optimization: Preconnect to CDNs -->
+    <title>DigiMoms - Website Build Agency</title>
+
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://images.unsplash.com">
-
-    <!-- Hero Image Preload for Fast LCP -->
-    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop">
-
-    <!-- Fonts & Icons with Display Swap for Speed -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Animation Library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
@@ -33,6 +25,39 @@
             --white: #ffffff;
             --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
+
+        /* --- PRELOADER SYSTEM --- */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease;
+        }
+        .loader-box { text-align: center; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--bg-light);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .loader-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .loader-text p { margin: 5px 0; font-size: 16px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- GLOBAL STYLES --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -84,7 +109,7 @@
         .about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
         .about-text h3 { font-size: 28px; margin-bottom: 20px; color: var(--primary); }
         .about-text p { margin-bottom: 15px; color: #444; text-align: justify; }
-        .about-img img { width: 100%; height: auto; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
+        .about-img img { width: 100%; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
 
         /* --- 6. CEO SECTION (NEW) --- */
         .ceo-section { background: white; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1.5fr; align-items: center; }
@@ -176,429 +201,462 @@
 </head>
 <body>
 
-    <!-- 1. Top Bar -->
-    <div class="top-bar">
-        <span><i class="fas fa-envelope"></i> digimomsagency@gmail.com</span>
-        <span><i class="fab fa-whatsapp" style="color: #25D366;"></i> 8900415647 (Only WhatsApp)</span>
+<!-- Preloader Start -->
+<div id="preloader">
+    <div class="loader-box">
+        <div class="spinner"></div>
+        <div class="loader-text">
+            <p>Please wait, site is loading...</p>
+            <p>অনুগ্রহ করে অপেক্ষা করুন, সাইটটি লোড হচ্ছে...</p>
+        </div>
     </div>
+</div>
+<!-- Preloader End -->
 
-    <!-- 2. Header -->
-    <header>
-        <div class="logo" onclick="location.reload()">DIGI<span>MOMS</span></div>
-        <nav>
-            <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#ceo">Founder</a></li>
-                <li><a href="#plans">Pricing</a></li>
-                <li><a href="#showcase">Portfolio</a></li>
-                <li><a href="#academy">Academy</a></li>
-                <li><a href="#contact">Contact</a></li>
+<!-- 1. Top Bar -->
+<div class="top-bar">
+    <span><i class="fas fa-envelope"></i> digimomsagency@gmail.com</span>
+    <span><i class="fab fa-whatsapp" style="color: #25D366;"></i> 8900415647 (Only WhatsApp)</span>
+</div>
+
+<!-- 2. Header -->
+<header>
+    <div class="logo" onclick="location.reload()">DIGI<span>MOMS</span></div>
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#ceo">Founder</a></li>
+            <li><a href="#plans">Pricing</a></li>
+            <li><a href="#showcase">Portfolio</a></li>
+            <li><a href="#academy">Academy</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <div class="nav-btns">
+        <div class="gear-btn" onclick="openAdmin()"><i class="fas fa-cog"></i></div>
+        <button class="btn btn-p" style="padding: 10px 20px;" onclick="toWA('Hi, I want a quote for my website.')">Free Quote</button>
+    </div>
+</header>
+
+<!-- 3. Hero Section -->
+<section class="hero">
+    <div class="hero-box animate__animated animate__fadeInUp">
+        <h1>Elevate Your Business With <br>High-Performance Websites</h1>
+        <p>DigiMoms specializes in creating premium, Flipkart-style responsive websites that drive results. From single pages to complex E-commerce platforms, we build digital success stories.</p>
+        <div class="hero-btns">
+            <button class="btn btn-p" onclick="window.location='#plans'">Explore Plans</button>
+            <button class="btn btn-s" onclick="window.location='#showcase'">View Our Work</button>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Tech Slider -->
+<div class="tech-slide">
+    <div class="ts-wrap">
+        <div class="ts-track">
+            <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
+            <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
+            <div class="ts-item"><i class="fab fa-js"></i> JAVASCRIPT</div>
+            <div class="ts-item"><i class="fab fa-react"></i> REACT JS</div>
+            <div class="ts-item"><i class="fab fa-wordpress"></i> WORDPRESS</div>
+            <div class="ts-item"><i class="fab fa-php"></i> PHP/MYSQL</div>
+            <div class="ts-item"><i class="fab fa-node-js"></i> NODE JS</div>
+            <div class="ts-item"><i class="fab fa-python"></i> PYTHON</div>
+            <!-- Loop -->
+            <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
+            <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
+            <div class="ts-item"><i class="fab fa-js"></i> JAVASCRIPT</div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. About Us -->
+<section id="about">
+    <div class="container about-wrap">
+        <div class="about-img animate__animated animate__fadeInLeft">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop" alt="Team Work" loading="lazy">
+        </div>
+        <div class="about-text animate__animated animate__fadeInRight">
+            <h3>Innovation Meets Excellence</h3>
+            <p>DigiMoms is not just another agency; we are a dedicated Digital Marketing and Web Development Institute located in Sabang. We understand the local market and combine it with international design standards.</p>
+            <p>Our primary goal is to provide a professional online identity to every business. We don't just build websites; we take responsibility for your complete digital branding.</p>
+            <div style="margin-top: 20px;">
+                <i class="fas fa-check-circle" style="color:var(--primary)"></i> 100% Mobile Responsive Designs<br>
+                <i class="fas fa-check-circle" style="color:var(--primary)"></i> Fast Loading Speed Optimization<br>
+                <i class="fas fa-check-circle" style="color:var(--primary)"></i> SEO Friendly Structure
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. CEO Section (NEW) -->
+<section id="ceo">
+    <div class="container ceo-section">
+        <div class="ceo-img">
+            <img src="https://digimoms.in/ami-final.jpg" alt="CEO Image" loading="lazy"> <!-- Replace with Tanmoy's Image -->
+        </div>
+        <div class="ceo-content">
+            <h3>Tanmoy Das</h3>
+            <span class="tag">Founder & CEO, DigiMoms</span>
+            <blockquote>"Based in Sabang, I founded DigiMoms with a clear vision: to provide premium, high-end web solutions to businesses all over India at a price that truly make sense. Your growth is our mission."</blockquote>
+            <p>With years of experience in coding and digital strategy, we ensure that every line of code we write adds value to your business. We are West Bengal's first agency to bridge this price-to-quality gap.</p>
+            <div style="margin-top:20px;">
+                <button class="btn btn-p" onclick="toWA('Hi Tanmoy, I want to discuss a project.')">Connect Directly</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. Why Choose Us (Multilingual) -->
+<section id="why-us" style="background: var(--bg-light);">
+    <div class="container">
+        <div class="lang-switcher-box">
+            <div class="lang-btns">
+                <button class="btn-lang active" onclick="changeLang('en', this)">English</button>
+                <button class="btn-lang" onclick="changeLang('bn', this)">Bengali</button>
+                <button class="btn-lang" onclick="changeLang('hi', this)">Hindi</button>
+            </div>
+            <div class="lang-content animate__animated animate__fadeIn" id="langContent">
+                <h3 id="langTitle">Why Your Business Needs a Website & Why Choose Us?</h3>
+                <p id="langDesc">In today's digital era, a website is your 24/7 digital storefront. It builds trust, reaches global customers, and showcases your brand's authority. <b>DigiMoms is West Bengal's first agency</b> providing premium web solutions with extensive features at prices that are unmatched in the market.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 8. Pricing Plans -->
+<section id="plans">
+    <div class="v-title">
+        <h2>Our Pricing & Plans</h2>
+        <p>Transparent pricing with zero hidden costs. Choose the best one for your brand.</p>
+    </div>
+    <div class="container plan-grid">
+        <!-- Starter -->
+        <div class="p-box">
+            <h3>Starter</h3>
+            <div class="price">₹999</div>
+            <ul class="p-features">
+                <li><i class="fas fa-check"></i> 1 Professional Landing Page</li>
+                <li><i class="fas fa-check"></i> Premium Domain (1yr)</li>
+                <li><i class="fas fa-check"></i> Basic Free Hosting Included</li>
+                <li><i class="fas fa-check"></i> Mobile & Tablet Responsive</li>
+                <li><i class="fas fa-check"></i> WhatsApp Chat Integration</li>
             </ul>
-        </nav>
-        <div class="nav-btns">
-            <div class="gear-btn" onclick="openAdmin()"><i class="fas fa-cog"></i></div>
-            <button class="btn btn-p" style="padding: 10px 20px;" onclick="toWA('Hi, I want a quote for my website.')">Free Quote</button>
+            <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Starter Plan ₹999')">Order Now</button>
         </div>
-    </header>
+        <!-- Business -->
+        <div class="p-box popular">
+            <div class="p-badge">MOST POPULAR</div>
+            <h3>Business</h3>
+            <div class="price">₹4,999<span>+</span></div>
+            <ul class="p-features">
+                <li><i class="fas fa-check"></i> Up to 7 Professional Pages</li>
+                <li><i class="fas fa-check"></i> High Speed Premium Hosting</li>
+                <li><i class="fas fa-check"></i> Premium Domain</li>
+                <li><i class="fas fa-check"></i> SSL Security Certificate</li>
+                <li><i class="fas fa-check"></i> Google Map & SEO Setup</li>
+                <li><i class="fas fa-gift"></i> 1 Influencer Campaign Free</li>
+            </ul>
+            <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Business Plan ₹4,999')">Select Business</button>
+        </div>
+        <!-- Premium -->
+        <div class="p-box">
+            <h3>Premium</h3>
+            <div class="price">₹12,999<span>+</span></div>
+            <ul class="p-features">
+                <li><i class="fas fa-check"></i> Unlimited Pages & Custom Design</li>
+                <li><i class="fas fa-check"></i> Ecommerce + Payment Gateway</li>
+                <li><i class="fas fa-check"></i> Order Tracking System</li>
+                <li><i class="fas fa-check"></i> Advanced Admin Panel</li>
+                <li><i class="fas fa-gift"></i> 1 Influencer Campaign Free</li>
+                <li><i class="fas fa-check"></i> 1 Year VIP Maintenance</li>
+            </ul>
+            <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Premium Plan')">Select Premium</button>
+        </div>
+        <!-- Custom -->
+        <div class="p-box">
+            <h3>Custom Solution</h3>
+            <div class="price">Variable</div>
+            <ul class="p-features">
+                <li><i class="fas fa-check"></i> Custom Web Applications</li>
+                <li><i class="fas fa-check"></i> Database Management</li>
+                <li><i class="fas fa-check"></i> Multi-Vendor Platforms</li>
+                <li><i class="fas fa-check"></i> Android App Integration</li>
+                <li><i class="fas fa-check"></i> Scalable Cloud Infra</li>
+            </ul>
+            <button class="btn btn-s" style="width:100%; border:1px solid var(--primary);" onclick="toWA('Requesting a Custom Quote.')">Discuss Idea</button>
+        </div>
+    </div>
+</section>
 
-    <!-- 3. Hero Section -->
-    <section class="hero">
-        <div class="hero-box animate__animated animate__fadeInUp">
-            <h1>Elevate Your Business With <br>High-Performance Websites</h1>
-            <p>DigiMoms specializes in creating premium, Flipkart-style responsive websites that drive results. From single pages to complex E-commerce platforms, we build digital success stories.</p>
-            <div class="hero-btns">
-                <button class="btn btn-p" onclick="window.location='#plans'">Explore Plans</button>
-                <button class="btn btn-s" onclick="window.location='#showcase'">View Our Work</button>
+<!-- 9. Live Project Showcase (NEW) -->
+<section id="showcase" style="background:#f1f3f6">
+    <div class="v-title">
+        <h2>Live Project Showcase</h2>
+        <p>Hover over the cards to see the full length of our modern designs.</p>
+    </div>
+    <div class="container demo-grid" id="demo-list">
+        <!-- Dynamic Content via JS -->
+    </div>
+</section>
+
+<!-- 10. Academy & Earning -->
+<section id="academy" style="background:#fdfdfd">
+    <div class="container split-sec">
+        <div class="split-card animate__animated animate__fadeInLeft">
+            <div style="height:250px; background: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop'); background-size:cover;"></div>
+            <div class="split-content">
+                <h3>DigiMoms Academy</h3>
+                <p>Learn Web Development from experts. We teach HTML, CSS, JS, and PHP from scratch with live projects.</p>
+                <ul style="margin: 20px 0;">
+                    <li><i class="fas fa-star" style="color:var(--accent)"></i> Professional Internship</li>
+                    <li><i class="fas fa-star" style="color:var(--accent)"></i> Unlimited Earning Methods</li>
+                </ul>
+                <button class="btn btn-p" onclick="toWA('I want to join the Academy.')">Join Academy</button>
             </div>
         </div>
-    </section>
-
-    <!-- 4. Tech Slider -->
-    <div class="tech-slide">
-        <div class="ts-wrap">
-            <div class="ts-track">
-                <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
-                <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
-                <div class="ts-item"><i class="fab fa-js"></i> JAVASCRIPT</div>
-                <div class="ts-item"><i class="fab fa-react"></i> REACT JS</div>
-                <div class="ts-item"><i class="fab fa-wordpress"></i> WORDPRESS</div>
-                <div class="ts-item"><i class="fab fa-php"></i> PHP/MYSQL</div>
-                <div class="ts-item"><i class="fab fa-node-js"></i> NODE JS</div>
-                <div class="ts-item"><i class="fab fa-python"></i> PYTHON</div>
-                <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
-                <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
-                <div class="ts-item"><i class="fab fa-js"></i> JAVASCRIPT</div>
+        <div class="split-card animate__animated animate__fadeInRight">
+            <div style="height:250px; background: url('https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop'); background-size:cover;"></div>
+            <div class="split-content">
+                <h3>Earn With Us</h3>
+                <p>Be a partner. Refer projects and earn attractive commissions or work as a freelancer with us.</p>
+                <ul style="margin: 20px 0;">
+                    <li><i class="fas fa-star" style="color:var(--accent)"></i> High Commission Rates</li>
+                    <li><i class="fas fa-star" style="color:var(--accent)"></i> Flexible Working Hours</li>
+                </ul>
+                <button class="btn btn-s" style="border:1px solid var(--secondary); color:var(--secondary)" onclick="toWA('Tell me how to earn with DigiMoms.')">Start Earning</button>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- 5. About Us -->
-    <section id="about">
-        <div class="container about-wrap">
-            <div class="about-img animate__animated animate__fadeInLeft">
-                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop" alt="Team Work" loading="lazy" width="600" height="400">
-            </div>
-            <div class="about-text animate__animated animate__fadeInRight">
-                <h3>Innovation Meets Excellence</h3>
-                <p>DigiMoms is not just another agency; we are a dedicated Digital Marketing and Web Development Institute located in Sabang. We understand the local market and combine it with international design standards.</p>
-                <p>Our primary goal is to provide a professional online identity to every business. We don't just build websites; we take responsibility for your complete digital branding.</p>
-                <div style="margin-top: 20px;">
-                    <i class="fas fa-check-circle" style="color:var(--primary)"></i> 100% Mobile Responsive Designs<br>
-                    <i class="fas fa-check-circle" style="color:var(--primary)"></i> Fast Loading Speed Optimization<br>
-                    <i class="fas fa-check-circle" style="color:var(--primary)"></i> SEO Friendly Structure
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- 11. Counter Section -->
+<section class="counter-sec">
+    <div class="count-box"><h2>150+</h2><p>Projects Done</p></div>
+    <div class="count-box"><h2>150+</h2><p>Happy Clients</p></div>
+    <div class="count-box"><h2>15+</h2><p>Experts Team</p></div>
+    <div class="count-box"><h2>5+</h2><p>Years Experience</p></div>
+</section>
 
-    <!-- 6. CEO Section (NEW) -->
-    <section id="ceo">
-        <div class="container ceo-section">
-            <div class="ceo-img">
-                <img src="https://digimoms.in/ami-final.jpg" alt="Tanmoy Das CEO DigiMoms" loading="lazy" width="500" height="500">
-            </div>
-            <div class="ceo-content">
-                <h3>Tanmoy Das</h3>
-                <span class="tag">Founder & CEO, DigiMoms</span>
-                <blockquote>"Based in Sabang, I founded DigiMoms with a clear vision: to provide premium, high-end web solutions to businesses all over India at a price that truly make sense. Your growth is our mission."</blockquote>
-                <p>With years of experience in coding and digital strategy, we ensure that every line of code we write adds value to your business. We are West Bengal's first agency to bridge this price-to-quality gap.</p>
-                <div style="margin-top:20px;">
-                    <button class="btn btn-p" onclick="toWA('Hi Tanmoy, I want to discuss a project.')">Connect Directly</button>
-                </div>
-            </div>
+<!-- 12. FAQ -->
+<section id="faq">
+    <div class="v-title"><h2>Frequently Asked Questions</h2></div>
+    <div class="container" style="max-width:800px;">
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">How long does it take to build a website? <i class="fas fa-plus"></i></div>
+            <p class="faq-a" style="display:none; margin-top:10px;">Usually, we deliver basic websites within 3-7 days and E-commerce sites within 15 days.</p>
         </div>
-    </section>
-
-    <!-- 7. Why Choose Us (Multilingual) -->
-    <section id="why-us" style="background: var(--bg-light);">
-        <div class="container">
-            <div class="lang-switcher-box">
-                <div class="lang-btns">
-                    <button class="btn-lang active" onclick="changeLang('en', this)">English</button>
-                    <button class="btn-lang" onclick="changeLang('bn', this)">Bengali</button>
-                    <button class="btn-lang" onclick="changeLang('hi', this)">Hindi</button>
-                </div>
-                <div class="lang-content animate__animated animate__fadeIn" id="langContent">
-                    <h3 id="langTitle">Why Your Business Needs a Website & Why Choose Us?</h3>
-                    <p id="langDesc">In today's digital era, a website is your 24/7 digital storefront. It builds trust, reaches global customers, and showcases your brand's authority. <b>DigiMoms is West Bengal's first agency</b> providing premium web solutions with extensive features at prices that are unmatched in the market.</p>
-                </div>
-            </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">Will my website be mobile responsive? <i class="fas fa-plus"></i></div>
+            <p class="faq-a" style="display:none; margin-top:10px;">Yes, 100%. Your website will look perfect on mobile, tablets, and desktop computers.</p>
         </div>
-    </section>
-
-    <!-- 8. Pricing Plans -->
-    <section id="plans">
-        <div class="v-title">
-            <h2>Our Pricing & Plans</h2>
-            <p>Transparent pricing with zero hidden costs. Choose the best one for your brand.</p>
-        </div>
-        <div class="container plan-grid">
-            <div class="p-box">
-                <h3>Starter</h3>
-                <div class="price">₹999</div>
-                <ul class="p-features">
-                    <li><i class="fas fa-check"></i> 1 Professional Landing Page</li>
-                    <li><i class="fas fa-check"></i> Premium Domain (1yr)</li>
-                    <li><i class="fas fa-check"></i> Basic Free Hosting Included</li>
-                    <li><i class="fas fa-check"></i> Mobile & Tablet Responsive</li>
-                    <li><i class="fas fa-check"></i> WhatsApp Chat Integration</li>
-                </ul>
-                <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Starter Plan ₹999')">Order Now</button>
-            </div>
-            <div class="p-box popular">
-                <div class="p-badge">MOST POPULAR</div>
-                <h3>Business</h3>
-                <div class="price">₹4,999<span>+</span></div>
-                <ul class="p-features">
-                    <li><i class="fas fa-check"></i> Up to 7 Professional Pages</li>
-                    <li><i class="fas fa-check"></i> High Speed Premium Hosting</li>
-                    <li><i class="fas fa-check"></i> Premium Domain</li>
-                    <li><i class="fas fa-check"></i> SSL Security Certificate</li>
-                    <li><i class="fas fa-check"></i> Google Map & SEO Setup</li>
-                    <li><i class="fas fa-gift"></i> 1 Influencer Campaign Free</li>
-                </ul>
-                <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Business Plan ₹4,999')">Select Business</button>
-            </div>
-            <div class="p-box">
-                <h3>Premium</h3>
-                <div class="price">₹12,999<span>+</span></div>
-                <ul class="p-features">
-                    <li><i class="fas fa-check"></i> Unlimited Pages & Custom Design</li>
-                    <li><i class="fas fa-check"></i> Ecommerce + Payment Gateway</li>
-                    <li><i class="fas fa-check"></i> Order Tracking System</li>
-                    <li><i class="fas fa-check"></i> Advanced Admin Panel</li>
-                    <li><i class="fas fa-gift"></i> 1 Influencer Campaign Free</li>
-                    <li><i class="fas fa-check"></i> 1 Year VIP Maintenance</li>
-                </ul>
-                <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Premium Plan')">Select Premium</button>
-            </div>
-            <div class="p-box">
-                <h3>Custom Solution</h3>
-                <div class="price">Variable</div>
-                <ul class="p-features">
-                    <li><i class="fas fa-check"></i> Custom Web Applications</li>
-                    <li><i class="fas fa-check"></i> Database Management</li>
-                    <li><i class="fas fa-check"></i> Multi-Vendor Platforms</li>
-                    <li><i class="fas fa-check"></i> Android App Integration</li>
-                    <li><i class="fas fa-check"></i> Scalable Cloud Infra</li>
-                </ul>
-                <button class="btn btn-s" style="width:100%; border:1px solid var(--primary);" onclick="toWA('Requesting a Custom Quote.')">Discuss Idea</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- 9. Live Project Showcase -->
-    <section id="showcase" style="background:#f1f3f6">
-        <div class="v-title">
-            <h2>Live Project Showcase</h2>
-            <p>Hover over the cards to see the full length of our modern designs.</p>
-        </div>
-        <div class="container demo-grid" id="demo-list">
-            <!-- Dynamic Content via JS -->
-        </div>
-    </section>
-
-    <!-- 10. Academy & Earning -->
-    <section id="academy" style="background:#fdfdfd">
-        <div class="container split-sec">
-            <div class="split-card animate__animated animate__fadeInLeft">
-                <div style="height:250px; background: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop'); background-size:cover;"></div>
-                <div class="split-content">
-                    <h3>DigiMoms Academy</h3>
-                    <p>Learn Web Development from experts. We teach HTML, CSS, JS, and PHP from scratch with live projects.</p>
-                    <ul style="margin: 20px 0;">
-                        <li><i class="fas fa-star" style="color:var(--accent)"></i> Professional Internship</li>
-                        <li><i class="fas fa-star" style="color:var(--accent)"></i> Unlimited Earning Methods</li>
-                    </ul>
-                    <button class="btn btn-p" onclick="toWA('I want to join the Academy.')">Join Academy</button>
-                </div>
-            </div>
-            <div class="split-card animate__animated animate__fadeInRight">
-                <div style="height:250px; background: url('https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop'); background-size:cover;"></div>
-                <div class="split-content">
-                    <h3>Earn With Us</h3>
-                    <p>Be a partner. Refer projects and earn attractive commissions or work as a freelancer with us.</p>
-                    <ul style="margin: 20px 0;">
-                        <li><i class="fas fa-star" style="color:var(--accent)"></i> High Commission Rates</li>
-                        <li><i class="fas fa-star" style="color:var(--accent)"></i> Flexible Working Hours</li>
-                    </ul>
-                    <button class="btn btn-s" style="border:1px solid var(--secondary); color:var(--secondary)" onclick="toWA('Tell me how to earn with DigiMoms.')">Start Earning</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 11. Counter Section -->
-    <section class="counter-sec">
-        <div class="count-box"><h2>150+</h2><p>Projects Done</p></div>
-        <div class="count-box"><h2>150+</h2><p>Happy Clients</p></div>
-        <div class="count-box"><h2>15+</h2><p>Experts Team</p></div>
-        <div class="count-box"><h2>5+</h2><p>Years Experience</p></div>
-    </section>
-
-    <!-- 12. FAQ -->
-    <section id="faq">
-        <div class="v-title"><h2>Frequently Asked Questions</h2></div>
-        <div class="container" style="max-width:800px;">
-            <div class="faq-item" onclick="toggleFaq(this)">
-                <div class="faq-q">How long does it take to build a website? <i class="fas fa-plus"></i></div>
-                <p class="faq-a" style="display:none; margin-top:10px;">Usually, we deliver basic websites within 3-7 days and E-commerce sites within 15 days.</p>
-            </div>
-            <div class="faq-item" onclick="toggleFaq(this)">
-                <div class="faq-q">Will my website be mobile responsive? <i class="fas fa-plus"></i></div>
-                <p class="faq-a" style="display:none; margin-top:10px;">Yes, 100%. Your website will look perfect on mobile, tablets, and desktop computers.</p>
-            </div>
-            <div class="faq-item" onclick="toggleFaq(this)">
-                <div class="faq-q">Can I integrate a payment gateway? <i class="fas fa-plus"></i></div>
-                <p class="faq-a" style="display:none; margin-top:10px;">Absolutely. We can integrate Razorpay, PhonePe, or PayPal for secure online payments.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 13. Manual Reviews -->
-    <section id="manual-reviews">
-        <div class="v-title">
-            <h2>WhatsApp Verified Reviews</h2>
-            <p>Real feedback from our happy clients, collected via WhatsApp.</p>
-        </div>
-        <div class="container manual-rev-grid" id="rev-list">
-            <!-- Dynamic Content -->
-        </div>
-        <div style="text-align:center; margin-top:40px;">
-            <button class="btn btn-p" id="load-rev-btn" onclick="showAllReviews()">Load More Reviews</button>
-        </div>
-    </section>
-
-    <!-- 14. Policies -->
-    <section id="policy-center" style="background: #fff; padding: 60px 8%; border-top: 1px solid #ddd;">
-        <div class="container">
-            <div class="v-title">
-                <h2>Policies & Contact</h2>
-                <p>Our official guidelines. Note: Details shared via WhatsApp before final confirmation.</p>
-            </div>
-            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 30px;">
-                <button class="p-btn active" onclick="openPolicy('p-terms', this)">Terms</button>
-                <button class="p-btn" onclick="openPolicy('p-privacy', this)">Privacy</button>
-                <button class="p-btn" onclick="openPolicy('p-refund', this)">Refund</button>
-                <button class="p-btn" onclick="openPolicy('p-contact', this)">Contact</button>
-            </div>
-            <div id="p-content-area" class="p-content">
-                <div id="p-terms" style="display:block;">
-                    <h3>Terms & Conditions</h3>
-                    <p>Project starts after 30% advance payment. Final confirmation via WhatsApp.</p>
-                </div>
-                <div id="p-privacy" style="display:none;">
-                    <h3>Privacy Policy</h3>
-                    <p>We do not share your business data. All credentials used are strictly confidential.</p>
-                </div>
-                <div id="p-refund" style="display:none;">
-                    <h3>Refund Policy</h3>
-                    <p>No refunds once domain and hosting are purchased. 50% refund if cancelled early.</p>
-                </div>
-                <div id="p-contact" style="display:none;">
-                    <h3>Contact Us</h3>
-                    <p><i class="fab fa-whatsapp"></i> +91 8900415647<br><i class="fas fa-envelope"></i> digimomsagency@gmail.com</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 15. Footer -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4 style="color:white; font-size:24px;">DIGI<span>MOMS</span></h4>
-                <p>Sabang's leading digital agency providing high-quality web solutions to help businesses thrive.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                </div>
-            </div>
-            <div class="footer-col">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#plans">Our Pricing</a></li>
-                    <li><a href="#showcase">Our Work</a></li>
-                    <li><a href="#academy">Academy</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#policy-center">Terms & Conditions</a></li>
-                    <li><a href="#policy-center">Privacy Policy</a></li>
-                    <li><a href="#policy-center">Refund Policy</a></li>
-                    <li><a href="#policy-center">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Contact Info</h4>
-                <p><i class="fas fa-map-marker-alt"></i> Sabang, Paschim Medinipur, WB</p>
-                <p><i class="fab fa-whatsapp"></i> 8900415647</p>
-                <p><i class="fas fa-envelope"></i> digimomsagency@gmail.com</p>
-            </div>
-        </div>
-        <div class="copy-right">&copy; 2026 DigiMoms Digital Marketing Agency. All Rights Reserved.</div>
-    </footer>
-
-    <!-- Admin Modal -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content">
-            <h3>Admin Restricted</h3>
-            <p>Access only for internal team.</p>
-            <button class="btn btn-p" onclick="closeAdmin()">Close</button>
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">Can I integrate a payment gateway? <i class="fas fa-plus"></i></div>
+            <p class="faq-a" style="display:none; margin-top:10px;">Absolutely. We can integrate Razorpay, PhonePe, or PayPal for secure online payments.</p>
         </div>
     </div>
+</section>
 
-    <script>
-        const WHATSAPP = "918900415647";
-        function toWA(msg) { window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank'); }
+<!-- 13. Manual Reviews (WhatsApp Verified) -->
+<section id="manual-reviews">
+    <div class="v-title">
+        <h2>WhatsApp Verified Reviews</h2>
+        <p>Real feedback from our happy clients, collected via WhatsApp.</p>
+    </div>
+    <div class="container manual-rev-grid" id="rev-list">
+        <!-- Dynamic Content -->
+    </div>
+    <div style="text-align:center; margin-top:40px;">
+        <button class="btn btn-p" id="load-rev-btn" onclick="showAllReviews()">Load More Reviews</button>
+    </div>
+</section>
 
-        function toggleFaq(el) {
-            const p = el.querySelector('p');
-            const icon = el.querySelector('i');
-            if(p.style.display === "none") {
-                p.style.display = "block";
-                icon.className = "fas fa-minus";
-            } else {
-                p.style.display = "none";
-                icon.className = "fas fa-plus";
-            }
+<!-- 14. Policies (Tabbed) -->
+<section id="policy-center" style="background: #fff; padding: 60px 8%; border-top: 1px solid #ddd;">
+    <div class="container">
+        <div class="v-title">
+            <h2>Policies & Contact</h2>
+            <p>Our official guidelines. Note: Details shared via WhatsApp before final confirmation.</p>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 30px;">
+            <button class="p-btn active" onclick="openPolicy('p-terms', this)">Terms</button>
+            <button class="p-btn" onclick="openPolicy('p-privacy', this)">Privacy</button>
+            <button class="p-btn" onclick="openPolicy('p-refund', this)">Refund</button>
+            <button class="p-btn" onclick="openPolicy('p-contact', this)">Contact</button>
+        </div>
+        <div id="p-content-area" class="p-content">
+            <div id="p-terms" style="display:block;">
+                <h3>Terms & Conditions</h3>
+                <p>Project starts after 30% advance payment. Final confirmation via WhatsApp.</p>
+            </div>
+            <div id="p-privacy" style="display:none;">
+                <h3>Privacy Policy</h3>
+                <p>We do not share your business data. All credentials used are strictly confidential.</p>
+            </div>
+            <div id="p-refund" style="display:none;">
+                <h3>Refund Policy</h3>
+                <p>No refunds once domain and hosting are purchased. 50% refund if cancelled early.</p>
+            </div>
+            <div id="p-contact" style="display:none;">
+                <h3>Contact Us</h3>
+                <p><i class="fab fa-whatsapp"></i> +91 8900415647<br><i class="fas fa-envelope"></i> digimomsagency@gmail.com</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 15. Footer -->
+<footer>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4 style="color:white; font-size:24px;">DIGI<span>MOMS</span></h4>
+            <p>Sabang's leading digital agency providing high-quality web solutions to help businesses thrive.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#plans">Our Pricing</a></li>
+                <li><a href="#showcase">Our Work</a></li>
+                <li><a href="#academy">Academy</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Support</h4>
+            <ul>
+                <li><a href="#policy-center">Terms & Conditions</a></li>
+                <li><a href="#policy-center">Privacy Policy</a></li>
+                <li><a href="#policy-center">Refund Policy</a></li>
+                <li><a href="#policy-center">Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Contact Info</h4>
+            <p><i class="fas fa-map-marker-alt"></i> Sabang, Paschim Medinipur, WB</p>
+            <p><i class="fab fa-whatsapp"></i> 8900415647</p>
+            <p><i class="fas fa-envelope"></i> digimomsagency@gmail.com</p>
+        </div>
+    </div>
+    <div class="copy-right">&copy; 2026 DigiMoms Digital Marketing Agency. All Rights Reserved.</div>
+</footer>
+
+<!-- Admin Modal (Reserved for future) -->
+<div class="modal" id="adminModal">
+    <div class="modal-content">
+        <h3>Admin Restricted</h3>
+        <p>Access only for internal team.</p>
+        <button class="btn btn-p" onclick="closeAdmin()">Close</button>
+    </div>
+</div>
+
+<script>
+    // --- Preloader Script ---
+    window.addEventListener('load', function() {
+        const preloader = document.getElementById('preloader');
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    });
+
+    const WHATSAPP = "918900415647";
+    function toWA(msg) { window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank'); }
+
+    // --- FAQ Logic ---
+    function toggleFaq(el) {
+        const p = el.querySelector('p');
+        const icon = el.querySelector('i');
+        if(p.style.display === "none") {
+            p.style.display = "block";
+            icon.className = "fas fa-minus";
+        } else {
+            p.style.display = "none";
+            icon.className = "fas fa-plus";
         }
+    }
 
-        function openPolicy(id, btn) {
-            document.querySelectorAll('.p-content > div').forEach(c => c.style.display = 'none');
-            document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).style.display = 'block';
-            btn.classList.add('active');
-        }
+    // --- Policy Switcher ---
+    function openPolicy(id, btn) {
+        document.querySelectorAll('.p-content > div').forEach(c => c.style.display = 'none');
+        document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).style.display = 'block';
+        btn.classList.add('active');
+    }
 
-        const langData = {
-            en: { title: "Why Your Business Needs a Website & Why Choose Us?", desc: "In today's digital era, a website is your 24/7 digital storefront. It builds trust and reaches global customers." },
-            bn: { title: "কেন আপনার ব্যবসার জন্য ওয়েবসাইট প্রয়োজন?", desc: "আজকের ডিজিটাল যুগে ওয়েবসাইট আপনার ব্যবসার ২৪/৭ খোলা দোকান। এটি বিশ্বাসযোগ্যতা বাড়ায়।" },
-            hi: { title: "व्यवसाय के लिए वेबसाइट क्यों जरूरी है?", desc: "ডিজিটাল যুগ মে ওয়েবসাইট আপকি 24/7 খুলি দুকান হে। ইয়ে গ্রাহকো কা ভরসা জিতি হে।" }
-        };
-        function changeLang(lang, btn) {
-            document.getElementById('langTitle').innerText = langData[lang].title;
-            document.getElementById('langDesc').innerText = langData[lang].desc;
-            document.querySelectorAll('.btn-lang').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+    // --- Language Switcher ---
+    const langData = {
+        en: { title: "Why Your Business Needs a Website & Why Choose Us?", desc: "In today's digital era, a website is your 24/7 digital storefront. It builds trust and reaches global customers." },
+        bn: { title: "কেন আপনার ব্যবসার জন্য ওয়েবসাইট প্রয়োজন?", desc: "আজকের ডিজিটাল যুগে ওয়েবসাইট আপনার ব্যবসার ২৪/৭ খোলা দোকান। এটি বিশ্বাসযোগ্যতা বাড়ায়।" },
+        hi: { title: "व्यवसाय के लिए वेबसाइट क्यों जरूरी है?", desc: "ডিজিটাল যুগে ওয়েবসাইট আপনার ২৪/৭ খোলা দোকান। এটি গ্রাহকদের আস্থা অর্জন করে।" }
+    };
+    function changeLang(lang, btn) {
+        document.getElementById('langTitle').innerText = langData[lang].title;
+        document.getElementById('langDesc').innerText = langData[lang].desc;
+        document.querySelectorAll('.btn-lang').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
-        const demoProjects = [
-            { title: "Resturent", img: "https://digimoms.in/resturent.jpg", link: "https://tanmoy4945-svg.github.io/resturent" },
-            { title: "Education", img: "https://digimoms.in/education.jpg", link: "https://tanmoy4945-svg.github.io/education/" },
-            { title: "GYM", img: "https://digimoms.in/gym.jpg", link: "https://tanmoy4945-svg.github.io/gymdemo1/" },
-            { title: "Real Estate", img: "https://digimoms.in/real-estate.jpg", link: "https://tanmoy4945-svg.github.io/real-estate/" },
-            { title: "Doctor & Clinic", img: "https://digimoms.in/clinic.jpg", link: "https://tanmoy4945-svg.github.io/doctor-clinic" }
-        ];
+    // --- PROJECT DATA ---
+    const demoProjects = [
+        { title: "Resturent", img: "https://digimoms.in/resturent.jpg", link: "https://tanmoy4945-svg.github.io/resturent" },
+        { title: "Education", img: "https://digimoms.in/education.jpg", link: "https://tanmoy4945-svg.github.io/education/" },
+        { title: "GYM", img: "https://digimoms.in/gym.jpg", link: "https://tanmoy4945-svg.github.io/gymdemo1/" },
+        { title: "Real Estate", img: "https://digimoms.in/real-estate.jpg", link: "https://tanmoy4945-svg.github.io/real-estate/" },
+        { title: "Doctor & Clinic", img: "https://digimoms.in/clinic.jpg", link: "https://tanmoy4945-svg.github.io/doctor-clinic" }
+        
+    ];
 
-        function renderProjects() {
-            const container = document.getElementById('demo-list');
-            container.innerHTML = demoProjects.map(p => `
-                <div class="demo-card">
-                    <div class="demo-img-box">
-                        <div class="demo-img-scroll" style="background-image: url('${p.img}')"></div>
-                    </div>
-                    <div class="demo-info">
-                        <h4>${p.title}</h4>
-                        <button class="btn btn-p" onclick="window.open('${p.link}')" style="padding:8px 15px; font-size:12px;">Live Preview</button>
-                    </div>
+    function renderProjects() {
+        const container = document.getElementById('demo-list');
+        container.innerHTML = demoProjects.map(p => `
+            <div class="demo-card">
+                <div class="demo-img-box">
+                    <div class="demo-img-scroll" style="background-image: url('${p.img}')"></div>
                 </div>
-            `).join('');
-        }
-
-        const manualReviews = [
-            { name: "Rahul S.", msg: "Fantastic speed! My Sabang business is now reaching all of India.", rating: 5 },
-            { name: "Sneha Das", msg: "Best web agency for E-commerce in West Bengal.", rating: 5 },
-            { name: "Amit Kumar", msg: "CEO personally helped me. Great experience.", rating: 5 },
-            { name: "Priya Roy", msg: "Very affordable and high quality work.", rating: 4 },
-            { name: "Vikram Maity", msg: "Professional team and fast delivery.", rating: 5 }
-        ];
-
-        function renderReviews(limit = 3) {
-            const container = document.getElementById('rev-list');
-            const data = manualReviews.slice(0, limit);
-            container.innerHTML = data.map(r => `
-                <div class="rev-card">
-                    <div style="color:var(--accent); margin-bottom:10px; font-size:18px;">${'★'.repeat(r.rating)}</div>
-                    <h4>${r.name}</h4>
-                    <p>"${r.msg}"</p>
+                <div class="demo-info">
+                    <h4>${p.title}</h4>
+                    <button class="btn btn-p" onclick="window.open('${p.link}')" style="padding:8px 15px; font-size:12px;">Live Preview</button>
                 </div>
-            `).join('');
-            if(limit >= manualReviews.length) document.getElementById('load-rev-btn').style.display = 'none';
-        }
+            </div>
+        `).join('');
+    }
 
-        function showAllReviews() { renderReviews(manualReviews.length); }
-        function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; }
-        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+    // --- MANUAL REVIEWS DATA ---
+    const manualReviews = [
+        { name: "Rahul S.", msg: "Fantastic speed! My Sabang business is now reaching all of India.", rating: 5 },
+        { name: "Sneha Das", msg: "Best web agency for E-commerce in West Bengal.", rating: 5 },
+        { name: "Amit Kumar", msg: "CEO personally helped me. Great experience.", rating: 5 },
+        { name: "Priya Roy", msg: "Very affordable and high quality work.", rating: 4 },
+        { name: "Vikram Maity", msg: "Professional team and fast delivery.", rating: 5 }
+    ];
 
-        window.onload = () => {
-            renderProjects();
-            renderReviews(3);
-        };
-    </script>
+    function renderReviews(limit = 3) {
+        const container = document.getElementById('rev-list');
+        const data = manualReviews.slice(0, limit);
+        container.innerHTML = data.map(r => `
+            <div class="rev-card">
+                <div style="color:var(--accent); margin-bottom:10px; font-size:18px;">${'★'.repeat(r.rating)}</div>
+                <h4>${r.name}</h4>
+                <p>"${r.msg}"</p>
+            </div>
+        `).join('');
+        if(limit >= manualReviews.length) document.getElementById('load-rev-btn').style.display = 'none';
+    }
+
+    function showAllReviews() { renderReviews(manualReviews.length); }
+
+    function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; }
+    function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+
+    // Init functions
+    renderProjects();
+    renderReviews(3);
+
+</script>
 </body>
 </html>

@@ -5,9 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DigiMoms | Sabang's Premium Web Development & Digital Marketing Agency</title>
     
-    <!-- Fonts & Icons -->
+    <!-- Speed Optimization: Preconnect to CDNs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://images.unsplash.com">
+
+    <!-- Hero Image Preload for Fast LCP -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop">
+
+    <!-- Fonts & Icons with Display Swap for Speed -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    
     <!-- Animation Library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
@@ -74,7 +84,7 @@
         .about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
         .about-text h3 { font-size: 28px; margin-bottom: 20px; color: var(--primary); }
         .about-text p { margin-bottom: 15px; color: #444; text-align: justify; }
-        .about-img img { width: 100%; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
+        .about-img img { width: 100%; height: auto; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
 
         /* --- 6. CEO SECTION (NEW) --- */
         .ceo-section { background: white; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1.5fr; align-items: center; }
@@ -215,7 +225,6 @@
                 <div class="ts-item"><i class="fab fa-php"></i> PHP/MYSQL</div>
                 <div class="ts-item"><i class="fab fa-node-js"></i> NODE JS</div>
                 <div class="ts-item"><i class="fab fa-python"></i> PYTHON</div>
-                <!-- Loop -->
                 <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
                 <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
                 <div class="ts-item"><i class="fab fa-js"></i> JAVASCRIPT</div>
@@ -227,7 +236,7 @@
     <section id="about">
         <div class="container about-wrap">
             <div class="about-img animate__animated animate__fadeInLeft">
-                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop" alt="Team Work">
+                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop" alt="Team Work" loading="lazy" width="600" height="400">
             </div>
             <div class="about-text animate__animated animate__fadeInRight">
                 <h3>Innovation Meets Excellence</h3>
@@ -246,7 +255,7 @@
     <section id="ceo">
         <div class="container ceo-section">
             <div class="ceo-img">
-                <img src="https://digimoms.in/ami-final.jpg" alt="CEO Image"> <!-- Replace with Tanmoy's Image -->
+                <img src="https://digimoms.in/ami-final.jpg" alt="Tanmoy Das CEO DigiMoms" loading="lazy" width="500" height="500">
             </div>
             <div class="ceo-content">
                 <h3>Tanmoy Das</h3>
@@ -284,7 +293,6 @@
             <p>Transparent pricing with zero hidden costs. Choose the best one for your brand.</p>
         </div>
         <div class="container plan-grid">
-            <!-- Starter -->
             <div class="p-box">
                 <h3>Starter</h3>
                 <div class="price">₹999</div>
@@ -297,7 +305,6 @@
                 </ul>
                 <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Starter Plan ₹999')">Order Now</button>
             </div>
-            <!-- Business -->
             <div class="p-box popular">
                 <div class="p-badge">MOST POPULAR</div>
                 <h3>Business</h3>
@@ -312,7 +319,6 @@
                 </ul>
                 <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Business Plan ₹4,999')">Select Business</button>
             </div>
-            <!-- Premium -->
             <div class="p-box">
                 <h3>Premium</h3>
                 <div class="price">₹12,999<span>+</span></div>
@@ -326,7 +332,6 @@
                 </ul>
                 <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Premium Plan')">Select Premium</button>
             </div>
-            <!-- Custom -->
             <div class="p-box">
                 <h3>Custom Solution</h3>
                 <div class="price">Variable</div>
@@ -342,7 +347,7 @@
         </div>
     </section>
 
-    <!-- 9. Live Project Showcase (NEW) -->
+    <!-- 9. Live Project Showcase -->
     <section id="showcase" style="background:#f1f3f6">
         <div class="v-title">
             <h2>Live Project Showcase</h2>
@@ -410,7 +415,7 @@
         </div>
     </section>
 
-    <!-- 13. Manual Reviews (WhatsApp Verified) -->
+    <!-- 13. Manual Reviews -->
     <section id="manual-reviews">
         <div class="v-title">
             <h2>WhatsApp Verified Reviews</h2>
@@ -424,7 +429,7 @@
         </div>
     </section>
 
-    <!-- 14. Policies (Tabbed) -->
+    <!-- 14. Policies -->
     <section id="policy-center" style="background: #fff; padding: 60px 8%; border-top: 1px solid #ddd;">
         <div class="container">
             <div class="v-title">
@@ -498,7 +503,7 @@
         <div class="copy-right">&copy; 2026 DigiMoms Digital Marketing Agency. All Rights Reserved.</div>
     </footer>
 
-    <!-- Admin Modal (Reserved for future) -->
+    <!-- Admin Modal -->
     <div class="modal" id="adminModal">
         <div class="modal-content">
             <h3>Admin Restricted</h3>
@@ -511,7 +516,6 @@
         const WHATSAPP = "918900415647";
         function toWA(msg) { window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank'); }
 
-        // --- FAQ Logic ---
         function toggleFaq(el) {
             const p = el.querySelector('p');
             const icon = el.querySelector('i');
@@ -524,7 +528,6 @@
             }
         }
 
-        // --- Policy Switcher ---
         function openPolicy(id, btn) {
             document.querySelectorAll('.p-content > div').forEach(c => c.style.display = 'none');
             document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
@@ -532,11 +535,10 @@
             btn.classList.add('active');
         }
 
-        // --- Language Switcher ---
         const langData = {
             en: { title: "Why Your Business Needs a Website & Why Choose Us?", desc: "In today's digital era, a website is your 24/7 digital storefront. It builds trust and reaches global customers." },
             bn: { title: "কেন আপনার ব্যবসার জন্য ওয়েবসাইট প্রয়োজন?", desc: "আজকের ডিজিটাল যুগে ওয়েবসাইট আপনার ব্যবসার ২৪/৭ খোলা দোকান। এটি বিশ্বাসযোগ্যতা বাড়ায়।" },
-            hi: { title: "व्यवसाय के लिए वेबसाइट क्यों जरूरी है?", desc: "डिजिटल युग में वेबसाइट आपकी 24/7 खुली दुकान है। यह ग्राहकों का भरोसा जीतती है।" }
+            hi: { title: "व्यवसाय के लिए वेबसाइट क्यों जरूरी है?", desc: "ডিজিটাল যুগ মে ওয়েবসাইট আপকি 24/7 খুলি দুকান হে। ইয়ে গ্রাহকো কা ভরসা জিতি হে।" }
         };
         function changeLang(lang, btn) {
             document.getElementById('langTitle').innerText = langData[lang].title;
@@ -545,14 +547,12 @@
             btn.classList.add('active');
         }
 
-        // --- PROJECT DATA ---
         const demoProjects = [
             { title: "Resturent", img: "https://digimoms.in/resturent.jpg", link: "https://tanmoy4945-svg.github.io/resturent" },
             { title: "Education", img: "https://digimoms.in/education.jpg", link: "https://tanmoy4945-svg.github.io/education/" },
             { title: "GYM", img: "https://digimoms.in/gym.jpg", link: "https://tanmoy4945-svg.github.io/gymdemo1/" },
             { title: "Real Estate", img: "https://digimoms.in/real-estate.jpg", link: "https://tanmoy4945-svg.github.io/real-estate/" },
             { title: "Doctor & Clinic", img: "https://digimoms.in/clinic.jpg", link: "https://tanmoy4945-svg.github.io/doctor-clinic" }
-            
         ];
 
         function renderProjects() {
@@ -570,7 +570,6 @@
             `).join('');
         }
 
-        // --- MANUAL REVIEWS DATA ---
         const manualReviews = [
             { name: "Rahul S.", msg: "Fantastic speed! My Sabang business is now reaching all of India.", rating: 5 },
             { name: "Sneha Das", msg: "Best web agency for E-commerce in West Bengal.", rating: 5 },
@@ -593,7 +592,6 @@
         }
 
         function showAllReviews() { renderReviews(manualReviews.length); }
-
         function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; }
         function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
 

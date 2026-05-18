@@ -144,13 +144,42 @@
         .p-features li { padding: 8px 0; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
 
         /* --- 9. LIVE PROJECT SHOWCASE (NEW) --- */
-        .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-        .demo-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: 0.4s; }
-        .demo-card:hover { transform: translateY(-10px); }
-        .demo-img-box { height: 250px; overflow: hidden; position: relative; }
-        .demo-img-scroll { width: 100%; height: 1000px; background-size: cover; background-position: top; transition: 6s ease-in-out; }
-        .demo-card:hover .demo-img-scroll { background-position: bottom; }
-        .demo-info { padding: 20px; text-align: center; }
+.demo-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 30px; 
+}
+.demo-card { 
+    background: white; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    box-shadow: var(--shadow); 
+    transition: 0.4s; 
+}
+.demo-card:hover { 
+    transform: translateY(-10px); 
+}
+.demo-img-box { 
+    height: 250px; /* সেকশন সাইজ আগের মতোই থাকল */
+    overflow: hidden; 
+    position: relative; 
+}
+.demo-img-scroll { 
+    width: 100%; 
+    height: 100%; 
+    /* এখানে পরিবর্তন করা হয়েছে */
+    background-size: 100% auto; /* প্রস্থ ১০০% হবে কিন্তু উচ্চতা ইমেজের সাইজ অনুযায়ী হবে */
+    background-position: top; 
+    background-repeat: no-repeat;
+    transition: 6s ease-in-out; 
+}
+.demo-card:hover .demo-img-scroll { 
+    background-position: bottom; 
+}
+.demo-info { 
+    padding: 20px; 
+    text-align: center; 
+}
 
         /* --- 10. ACADEMY & EARNING --- */
         .split-sec { display: flex; flex-wrap: wrap; gap: 30px; }

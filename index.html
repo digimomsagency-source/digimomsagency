@@ -234,6 +234,84 @@
         @media (max-width: 480px) { .hero-box h1 { font-size: 24px; } .logo { font-size: 19px; } }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; }
         .modal-content { background: white; padding: 40px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; }
+
+
+
+
+
+
+
+
+/* --- POPUP STYLES --- */
+.popup-wrapper {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10001;
+    display: none; /* শুরুতে লুকানো থাকবে */
+    animation: slideInRight 0.5s ease;
+}
+
+.popup-card {
+    background: white;
+    width: 300px;
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-top: 5px solid var(--secondary);
+    position: relative;
+}
+
+.popup-close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+}
+
+.popup-card h4 {
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.popup-card p {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.popup-card .price-tag {
+    color: var(--secondary);
+    font-weight: 800;
+    font-size: 20px;
+}
+
+.popup-btns {
+    display: flex;
+    gap: 10px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@media (max-width: 480px) {
+    .popup-wrapper { bottom: 10px; right: 10px; left: 10px; }
+    .popup-card { width: auto; }
+}
+
+
+
+
+
+
+
+        
     </style>
 </head>
 <body class="loading">
@@ -668,6 +746,31 @@
         </div>
     </div>
 
+
+
+
+
+
+
+<!-- SPECIAL OFFER POPUP -->
+<div id="offer-popup" class="popup-wrapper">
+    <div class="popup-card">
+        <span class="popup-close" onclick="closePopup()">&times;</span>
+        <div id="popup-text-content">
+            <!-- জাভাস্ক্রিপ্ট থেকে এখানে কন্টেন্ট আসবে -->
+        </div>
+        <div class="popup-btns">
+            <button class="btn-p" style="padding: 8px 15px; font-size: 12px;" onclick="toWA('I want to claim the ₹699 Special Offer!')">Claim Now</button>
+            <button class="btn-s" style="padding: 8px 15px; font-size: 12px; border:1px solid #ddd;" onclick="window.location='#plans'; closePopup();">View Plans</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+    
+
     <script>
         // --- PRELOADER SCRIPT ---
         let count = 0;
@@ -785,6 +888,61 @@
         function showAllReviews() { renderReviews(manualReviews.length); }
         function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; }
         function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+
+
+
+
+
+
+
+// পপআপের ভাষা সেট করা
+        const popupData = {
+            en: "<h4>Welcome!</h4><p>Claim our <b>Special Offer Pack</b> at only <span class='price-tag'>₹699</span>. Claim it via WhatsApp or check our plans!</p>",
+            bn: "<h4>স্বাগতম!</h4><p>আমাদের <span class='price-tag'>৬৯৯ টাকার</span> <b>স্পেশাল অফার প্যাকটি</b> আজই নিন। হোয়াটসঅ্যাপ বা প্ল্যান সেকশনে গিয়ে ক্লেম করুন।</p>",
+            hi: "<h4>स्वागत है!</h4><p>हमारा <span class='price-tag'>₹699</span> का <b>स्पेशल ऑफर पैक</b> प्राप्त करें। व्हाट्सएप या प्लान सेक्शन से अभी क्लेম करें।</p>"
+        };
+
+        // পপআপ দেখানোর ফাংশন
+        function showPopup() {
+            const popup = document.getElementById('offer-popup');
+            const currentLang = document.querySelector('.btn-lang.active').getAttribute('onclick').match(/'([^']+)'/)[1]; // বর্তমান ভাষা চেক করবে
+            
+            document.getElementById('popup-text-content').innerHTML = popupData[currentLang];
+            popup.style.display = 'block';
+
+            // ৫ সেকেন্ড পর অটো গায়েব (৫০০০ মিলি-সেকেন্ড)
+            setTimeout(() => {
+                closePopup();
+            }, 5000);
+        }
+
+        // পপআপ বন্ধ করার ফাংশন
+        function closePopup() {
+            const popup = document.getElementById('offer-popup');
+            popup.style.opacity = '0';
+            setTimeout(() => { popup.style.display = 'none'; }, 500);
+        }
+
+        // সাইট লোড হওয়ার ২ সেকেন্ড পর পপআপ আসবে
+        window.addEventListener('load', () => {
+            setTimeout(showPopup, 2000); 
+        });
+
+        // মেইন ল্যাঙ্গুয়েজ চেঞ্জ করলে পপআপের লেখাও যেন চেঞ্জ হয় তার জন্য changeLang আপডেট করুন
+        const originalChangeLang = changeLang; // আপনার আগের ফাংশনটি সেভ রাখা
+        changeLang = function(lang, btn) {
+            originalChangeLang(lang, btn); // আগের কাজ করবে
+            if(document.getElementById('offer-popup').style.display === 'block') {
+                document.getElementById('popup-text-content').innerHTML = popupData[lang]; // পপআপের টেক্সট চেঞ্জ করবে
+            }
+        };
+
+
+
+
+
+
+        
     </script>
 </body>
 </html>

@@ -714,13 +714,26 @@
         }
 
         const langData = {
-            en: { title: "Why Your Business Needs a Website & Why Choose Us?", desc: "In today's digital era, a website is your 24/7 digital storefront. It builds trust and reaches global customers." },
-            bn: { title: "কেন আপনার ব্যবসার জন্য ওয়েবসাইট প্রয়োজন?", desc: "আজকের ডিজিটাল যুগে ওয়েবসাইট আপনার ব্যবসার ২৪/৭ খোলা দোকান। এটি বিশ্বাসযোগ্যতা বাড়ায়।" },
-            hi: { title: "व्यवसाय के लिए वेबसाइट क्यों जरूरी है?", desc: "ডিজিটাল যুগে ওয়েবসাইট আপনার ২৪/৭ খোলা দোকান। এটি গ্রাহকদের আস্থা অর্জন করে।" }
+            en: { 
+                title: "Why Your Business Needs a Website & Why Us?", 
+                desc: "In today's digital era, a website is your 24/7 digital storefront. It builds trust, reaches global customers, and showcases authority. <br><br><b>The DigiMoms Difference:</b> Unlike big corporate agencies, we don't believe in robotic customer care or automated bots. We are a friendly, local team that offers a personal touch. You get <b>direct access to the founder via WhatsApp</b>—no waiting, no formal fluff. We are honest about our limits, but within them, we provide premium tech solutions that actually work for your business growth." 
+            },
+            bn: { 
+                title: "কেন আপনার ব্যবসার জন্য ওয়েবসাইট প্রয়োজন এবং কেন আমাদের বেছে নেবেন?", 
+                desc: "আজকের ডিজিটাল যুগে ওয়েবসাইট হলো আপনার ব্যবসার ২৪/৭ খোলা ডিজিটাল দোকান, যা গ্রাহকের বিশ্বাস বাড়ায়। <br><br><b>ডিজিমমস-এর বিশেষত্ব:</b> বড় বড় কোম্পানিগুলোর মতো আমরা আপনাকে 'রোবটিক রিপ্লাই' বা জটিল কাস্টমার কেয়ারে আটকে রাখি না। আমরা সাবাং-এর একটি ফ্রেন্ডলি টিম, যারা সরাসরি হোয়াটসঅ্যাপে আপনার সাথে বন্ধুর মতো কথা বলি। আমাদের কাজের একটি নির্দিষ্ট সীমা (limit) আছে, কিন্তু সেই সীমার মধ্যে আমরা সবথেকে সেরা টেকনোলজি ব্যবহার করি যাতে আপনার ব্যবসার প্রকৃত উন্নতি হয়।" 
+            },
+            hi: { 
+                title: "व्यवसाय के लिए वेबसाइट क्यों जरूरी है और हमें क्यों चुनें?", 
+                desc: "आज के डिजिटल युग में, एक वेबसाइट आपकी 24/7 खुली डिजिटल दुकान है जो ग्राहकों का भरोसा जीतती है। <br><br><b>डिजीमॉम्स क्यों:</b> बड़ी कॉर्पोरेट कंपनियों के विपरीत, हम आपको रोबोटिक जवाबों या ऑटोमेटेड बॉट्स में नहीं उलझाते। हम एक मैत्रीपूर्ण टीम हैं जो व्यक्तिगत सहायता प्रदान करते हैं। आप <b>सीधे व्हाट्सएप पर संस्थापक से बात कर सकते हैं</b>। हमारी अपनी सीमाएं हैं, लेकिन हम पूरी ईमानदारी और बेहतरीन तकनीक के साथ आपके व्यवसाय को बढ़ाने में मदद करते हैं।" 
+            }
         };
+
         function changeLang(lang, btn) {
-            document.getElementById('langTitle').innerText = langData[lang].title;
-            document.getElementById('langDesc').innerText = langData[lang].desc;
+            // ডিজাইন ঠিক রেখে শুধু কন্টেন্ট আপডেট
+            document.getElementById('langTitle').innerHTML = langData[lang].title;
+            document.getElementById('langDesc').innerHTML = langData[lang].desc;
+            
+            // বাটন এক্টিভ স্টেট পরিবর্তন
             document.querySelectorAll('.btn-lang').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }

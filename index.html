@@ -13,6 +13,46 @@
     <!-- Animation Library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
+
+
+
+
+<!-- SEO Meta Tags -->
+<meta name="description" content="DigiMoms - Sabang's No. 1 Web Development & Digital Marketing Agency. We create premium, high-speed, SEO-friendly websites. Get your business online with Tanmoy Jana.">
+<meta name="keywords" content="DigiMoms, Web Development Sabang, Digital Marketing Sabang, Tanmoy Jana, Website Design West Bengal, Cheap Website Sabang, DigiMoms Agency">
+<meta name="author" content="Tanmoy Jana">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph for Social Media -->
+<meta property="og:title" content="DigiMoms | Sabang's Premium Web Development Agency">
+<meta property="og:description" content="Elevate your business with professional websites. Contact DigiMoms today!">
+<meta property="og:image" content="https://digimoms.in/ami-final.jpg">
+<meta property="og:url" content="https://yourdomain.com">
+
+<!-- Schema.org for Google Search -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "DigiMoms",
+  "image": "https://digimoms.in/ami-final.jpg",
+  "@id": "",
+  "url": "https://yourdomain.com",
+  "telephone": "+919475388085",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Sabang",
+    "addressLocality": "Paschim Medinipur",
+    "postalCode": "721144",
+    "addressCountry": "IN"
+  }
+}
+</script>
+
+
+
+
+
     <style>
         :root {
             --primary: #2874f0; 
@@ -317,16 +357,21 @@
 <body class="loading">
 
     <!-- PRELOADER -->
-    <div id="loader-wrapper">
-        <div class="loader-content">
-            <div class="loader-circle"></div>
-            <div class="loader-percent" id="count">0%</div>
-            <div class="loader-text">
-                <p>Please wait, setting up your experience...</p>
-                <p>অনুগ্রহ করে অপেক্ষা করুন, আপনার ওয়েবসাইটটি প্রস্তুত হচ্ছে...</p>
-            </div>
+<div id="loader-wrapper">
+    <div class="loader-content">
+        <!-- Brand Name Added -->
+        <h1 style="color: var(--primary); font-family: 'Montserrat', sans-serif; letter-spacing: 2px; margin-bottom: 10px;">DIGI<span style="color:var(--secondary)">MOMS</span></h1>
+        
+        <div class="loader-circle"></div>
+        <div class="loader-percent" id="count">0%</div>
+        <div class="loader-text">
+            <p>Please wait, setting up your experience...</p>
+            <p>অনুগ্রহ করে অপেক্ষা করুন, আপনার ওয়েবসাইটটি প্রস্তুত হচ্ছে...</p>
         </div>
     </div>
+    <!-- Audio file placeholder (Replace link later) -->
+    <audio id="loader-audio" src="APNAR_AUDIO_LINK_E_KHANE_DEBEN" preload="auto"></audio>
+</div>
 
 
 
@@ -772,21 +817,37 @@
     <script>
         // --- PRELOADER SCRIPT ---
         let count = 0;
+        let audioPlayed = false;
+        const loaderAudio = document.getElementById('loader-audio');
+
+        // Counting logic
         let counter = setInterval(() => {
-            if(count < 95) { // Slow down at 95 until window fully loads
+            if(count < 99) { 
                 count++;
                 document.getElementById('count').innerText = count + '%';
             }
-        }, 30);
+            
+            // Audio play korar chesta (Browser policy-r jonno user interaction lagte pare)
+            if(!audioPlayed) {
+                loaderAudio.play().catch(() => { /* Autoplay block handle */ });
+                audioPlayed = true;
+            }
+        }, 50); // Speed control for loading text
 
         window.onload = () => {
+            // Window load hole counting 100 hobe
             clearInterval(counter);
             document.getElementById('count').innerText = '100%';
+            
             setTimeout(() => {
-                document.getElementById('loader-wrapper').style.display = 'none';
-                document.body.classList.remove('loading');
-                document.body.classList.add('loaded');
-            }, 500);
+                document.getElementById('loader-wrapper').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader-wrapper').style.display = 'none';
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                    // Page load hoye geleo audio cholte thakbe ba bondho korte chaile loaderAudio.pause() dite paren
+                }, 500);
+            }, 800);
             
             renderProjects();
             renderReviews(3);

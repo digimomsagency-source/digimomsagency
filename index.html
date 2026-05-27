@@ -360,22 +360,19 @@
     <!-- PRELOADER -->
 <div id="loader-wrapper">
     <div class="loader-content">
-        <!-- Brand Name Added -->
         <h1 style="color: var(--primary); font-family: 'Montserrat', sans-serif; letter-spacing: 2px; margin-bottom: 10px;">DIGI<span style="color:var(--secondary)">MOMS</span></h1>
         
         <div class="loader-circle"></div>
         <div class="loader-percent" id="count">0%</div>
-        <div class="loader-text">
-            <p>Please wait, setting up your experience...</p>
-            <p>অনুগ্রহ করে অপেক্ষা করুন, আপনার ওয়েবসাইটটি প্রস্তুত হচ্ছে...</p>
+        <div class="loader-text" style="font-size: 13px; color: #777;">
+            <p id="dynamic-text">Connecting to High-Speed Servers...</p>
+            <p id="dynamic-text-bn">সুরক্ষিত সার্ভারের সাথে যুক্ত করা হচ্ছে...</p>
         </div>
     </div>
-    <!-- Audio file placeholder (Replace link later) -->
-    <audio id="loader-audio" src="AA" preload="auto"></audio>
+    <!-- Ekhane loop attribute soriye dewa hoyeche, tai audio ekbar-i cholbe -->
+    <audio id="loader-audio" src="audio.mp3" preload="auto"></audio>
 </div>
-
-
-
+s
 
 
 <!-- SPECIAL OFFER POPUP -->
@@ -500,8 +497,8 @@
                     <button class="btn-lang" onclick="changeLang('hi', this)">Hindi</button>
                 </div>
                 <div class="lang-content animate__animated animate__fadeIn" id="langContent">
-                    <h3 id="langTitle">Why Your Business Needs a Website & Why Choose Us?</h3>
-                    <p id="langDesc">In today's digital era, a website is your 24/7 digital storefront. It builds trust, reaches global customers, and showcases your brand's authority. <b>DigiMoms is West Bengal's first agency</b> providing premium web solutions with extensive features at prices that are unmatched in the market.</p>
+                    <h3 id="langTitle">Is Your Business Invisible? Stop Losing Customers!</h3>
+                    <p id="langDesc">Whether you run a <b>Clinic, a Shop, or a Service Agency</b>, your customers are searching for you on Google right now. If you're not there, you've already lost them to your competitors. A website is not an expense; it's your <b>24/7 Digital Office</b> that builds trust and brings leads while you sleep. <br><br><b>Why DigiMoms?</b> We are a local team from <b>সবং (Sabang)</b>. Unlike big corporate giants, we don't believe in robotic customer care or automated bots. We offer a <b>friendly, direct connection</b>—you can talk to the founder on WhatsApp like a partner. We are honest about our limits, but within them, we provide high-end, premium technology at a price that big agencies can't match. Let's grow your brand together, personally.</p>
                 </div>
             </div>
         </div>
@@ -816,44 +813,68 @@
     
 
     <script>
-        // --- PRELOADER SCRIPT ---
+// --- PRELOADER & AUDIO LOGIC ---
         let count = 0;
-        let audioPlayed = false;
         const loaderAudio = document.getElementById('loader-audio');
+        const textEng = document.getElementById('dynamic-text');
+        const textBen = document.getElementById('dynamic-text-bn');
 
-        // Counting logic
+        const statusEng = ["Connecting to Servers...", "Verifying Security Protocols...", "Syncing High-Performance Assets...", "Optimizing UI for your Device..."];
+        const statusBen = ["সার্ভারের সাথে সংযোগ করা হচ্ছে...", "সিকিউরিটি প্রোটোকল যাচাই করা হচ্ছে...", "হাই-পারফরম্যান্স ফাইল সিঙ্ক করা হচ্ছে...", "ইউজার ইন্টারফেস অপ্টিমাইজ করা হচ্ছে..."];
+        let msgIndex = 0;
+
+        // ফাংশন: অডিও প্লে করার চেষ্টা করবে
+        function playAudio() {
+            loaderAudio.play().then(() => {
+                // অডিও সফলভাবে শুরু হলে লিসেনারগুলো সরিয়ে দেবে
+                document.removeEventListener('click', playAudio);
+                document.removeEventListener('touchstart', playAudio);
+            }).catch(error => {
+                console.log("Autoplay blocked. Waiting for user interaction...");
+            });
+        }
+
+        // ইউজার স্ক্রিনে প্রথম টাচ বা ক্লিক করলেই অডিও বাজবে
+        document.addEventListener('click', playAudio);
+        document.addEventListener('touchstart', playAudio);
+
         let counter = setInterval(() => {
             if(count < 99) { 
                 count++;
                 document.getElementById('count').innerText = count + '%';
             }
             
-            // Audio play korar chesta (Browser policy-r jonno user interaction lagte pare)
-            if(!audioPlayed) {
-                loaderAudio.play().catch(() => { /* Autoplay block handle */ });
-                audioPlayed = true;
+            if(count % 25 === 0) {
+                textEng.innerText = statusEng[msgIndex];
+                textBen.innerText = statusBen[msgIndex];
+                msgIndex = (msgIndex + 1) % statusEng.length;
             }
-        }, 50); // Speed control for loading text
+
+            // নিজে থেকে একবার প্লে করার চেষ্টা করবে
+            if(count === 5) { playAudio(); }
+
+        }, 60); 
 
         window.onload = () => {
-            // Window load hole counting 100 hobe
             clearInterval(counter);
             document.getElementById('count').innerText = '100%';
+            textEng.innerText = "System Ready. Welcome!";
+            textBen.innerText = "সিস্টেম প্রস্তুত। স্বাগতম!";
             
             setTimeout(() => {
-                document.getElementById('loader-wrapper').style.opacity = '0';
+                const loader = document.getElementById('loader-wrapper');
+                loader.style.transition = '0.8s';
+                loader.style.opacity = '0';
                 setTimeout(() => {
-                    document.getElementById('loader-wrapper').style.display = 'none';
+                    loader.style.display = 'none';
                     document.body.classList.remove('loading');
                     document.body.classList.add('loaded');
-                    // Page load hoye geleo audio cholte thakbe ba bondho korte chaile loaderAudio.pause() dite paren
-                }, 500);
-            }, 800);
+                }, 800);
+            }, 1000);
             
             renderProjects();
             renderReviews(3);
         };
-
         const WHATSAPP = "919475388085";
         function toWA(msg) { window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank'); }
 
@@ -948,11 +969,6 @@
         function showAllReviews() { renderReviews(manualReviews.length); }
         function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; }
         function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
-
-
-
-
-
 
 
 

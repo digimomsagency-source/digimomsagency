@@ -28,7 +28,7 @@
 <meta property="og:title" content="DigiMoms | Sabang's Premium Web Development Agency">
 <meta property="og:description" content="Elevate your business with professional websites. Contact DigiMoms today!">
 <meta property="og:image" content="https://www.digimoms.in/ami-final.jpg">
-<meta property="og:url" content="https://www.yourdomain.com">
+<meta property="og:url" content="https://www.digimoms.in">
 
 <!-- Schema.org for Google Search -->
 <script type="application/ld+json">
@@ -283,70 +283,82 @@
 
 
 
-/* --- POPUP STYLES --- */
-.popup-wrapper {
+/* --- IMPROVED POPUP STYLE --- */
+.new-popup-wrapper {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 10001;
-    display: none; /* শুরুতে লুকানো থাকবে */
-    animation: slideInRight 0.5s ease;
+    z-index: 10005;
+    display: none; /* শুরুতে লুকানো */
+    animation: slideUp 0.6s ease-out;
 }
 
-.popup-card {
-    background: white;
-    width: 300px;
-    padding: 25px 20px;
+.new-popup-card {
+    background: #fff;
+    width: 320px;
+    padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    border-top: 5px solid var(--secondary);
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    border-left: 6px solid var(--secondary);
     position: relative;
 }
 
-.popup-close {
+.popup-timer-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: var(--secondary);
+    width: 100%;
+    animation: timer-drain 20s linear forwards;
+}
+
+@keyframes timer-drain {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+.close-btn {
     position: absolute;
     top: 5px;
-    right: 10px;
-    font-size: 24px;
+    right: 12px;
+    font-size: 22px;
     cursor: pointer;
-    color: #888;
+    color: #999;
 }
 
-.popup-card h4 {
+.new-popup-card h4 {
     color: var(--primary);
-    margin-bottom: 8px;
     font-size: 18px;
-}
-
-.popup-card p {
-    font-size: 14px;
-    color: #444;
-    line-height: 1.4;
-    margin-bottom: 15px;
-}
-
-.popup-card .price-tag {
-    color: var(--secondary);
-    font-weight: 800;
-    font-size: 20px;
-}
-
-.popup-btns {
+    margin-bottom: 8px;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
 }
 
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+.new-popup-card p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
 }
 
+@keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Mobile responsive */
 @media (max-width: 480px) {
-    .popup-wrapper { bottom: 10px; right: 10px; left: 10px; }
-    .popup-card { width: auto; }
+    .new-popup-wrapper {
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+    .new-popup-card {
+        width: 100%;
+        border-radius: 15px 15px 0 0;
+    }
 }
-
-
 
 
 
@@ -374,16 +386,24 @@
 </div>
 
 
-<!-- SPECIAL OFFER POPUP -->
-<div id="offer-popup" class="popup-wrapper">
-    <div class="popup-card">
-        <span class="popup-close" onclick="closePopup()">&times;</span>
-        <div id="popup-text-content">
-            <!-- জাভাস্ক্রিপ্ট থেকে এখানে কন্টেন্ট আসবে -->
-        </div>
-        <div class="popup-btns">
-            <button class="btn-p" style="padding: 8px 15px; font-size: 12px;" onclick="toWA('I want to claim the ₹699 Special Offer!')">Claim Now</button>
-            <button class="btn-s" style="padding: 8px 15px; font-size: 12px; border:1px solid #ddd;" onclick="window.location='#plans'; closePopup();">View Plans</button>
+<!-- EID SPECIAL OFFER POPUP -->
+<div id="eid-popup" class="new-popup-wrapper">
+    <div class="new-popup-card">
+        <div class="popup-timer-bar"></div>
+        <span class="close-btn" onclick="closeEidPopup()">&times;</span>
+        <h4><i class="fas fa-gift"></i> Eid Special Offer!</h4>
+        
+        <!-- Bengali & English Text -->
+        <p style="font-weight: 600; color: #d35400;">
+            ঈদুল আযহা বিশেষ অফার! মাত্র ৭৯৯ টাকায় আপনার ব্যবসার ওয়েবসাইট তৈরি করুন। (অফারটি মাত্র ৭২ ঘণ্টার জন্য)
+        </p>
+        <p style="border-top: 1px solid #eee; padding-top: 8px; color: #555;">
+            Eid al-Adha Special! Get your professional website at just ₹799. (Valid for 72 hours only)
+        </p>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn btn-p" style="padding: 10px; font-size: 12px; flex: 1;" onclick="toWA('I want to buy website 799')">Order Now</button>
+            <button class="btn btn-s" style="padding: 10px; font-size: 12px; flex: 1; border: 1px solid #ddd;" onclick="closeEidPopup()">Later</button>
         </div>
     </div>
 </div>
@@ -812,6 +832,7 @@
     
 
     <script>
+
 // --- PRELOADER & AUDIO LOGIC ---
         let count = 0;
         const loaderAudio = document.getElementById('loader-audio');
@@ -874,6 +895,13 @@
             renderProjects();
             renderReviews(3);
         };
+
+
+
+
+
+
+
         const WHATSAPP = "919475388085";
         function toWA(msg) { window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank'); }
 
@@ -968,6 +996,34 @@
         function showAllReviews() { renderReviews(manualReviews.length); }
         function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; }
         function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+
+
+
+
+
+
+
+// --- EID POPUP LOGIC ---
+        function showEidPopup() {
+            const popup = document.getElementById('eid-popup');
+            popup.style.display = 'block';
+
+            // ১০ সেকেন্ড পর অটোমেটিক বন্ধ হবে
+            setTimeout(() => {
+                closeEidPopup();
+            }, 20000); 
+        }
+
+        function closeEidPopup() {
+            document.getElementById('eid-popup').style.display = 'none';
+        }
+
+        // পেজ লোড হওয়ার ৫ সেকেন্ড পর পপআপটি দেখাবে
+        window.addEventListener('load', () => {
+            setTimeout(showEidPopup, 5000);
+        });
+
+
 
 
 

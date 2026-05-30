@@ -30,24 +30,13 @@
 <meta property="og:image" content="https://www.digimoms.in/ami-final.jpg">
 <meta property="og:url" content="https://www.digimoms.in">
 
-<!-- Schema.org for Google Search -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "DigiMoms",
-  "image": "https://www.digimoms.in/ami-final.jpg",
-  "@id": "",
-  "url": "https://www.digimoms.in",
-  "telephone": "+919475388085",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Sabang",
-    "addressLocality": "Paschim Medinipur",
-    "postalCode": "721144",
-    "addressCountry": "IN"
-  }
-}
+<!-- Enhanced Local SEO -->
+<link rel="canonical" href="https://www.digimoms.in" />
+<meta name="geo.region" content="IN-WB" />
+<meta name="geo.placename" content="Sabang, Paschim Medinipur" />
+<meta name="geo.position" content="22.1855;87.5951" />
+<meta name="ICBM" content="22.1855, 87.5951" />
+<meta name="description" content="DigiMoms by Tanmoy Jana is Sabang's best web development agency. Get Flipkart-style premium websites, SEO, and Digital Marketing at just ₹799 in West Bengal.">
 </script>
 
 
@@ -363,6 +352,18 @@
 
 
 
+/* --- SCROLL REVEAL STYLE --- */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.9s ease-out;
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
 
         
     </style>
@@ -440,7 +441,16 @@
     <!-- 3. Hero Section -->
     <section class="hero">
         <div class="hero-box animate__animated animate__fadeInUp">
-            <h1>Elevate Your Business With <br>High-Performance Websites</h1>
+
+
+
+            <!-- Typing Effect H1 -->
+<h1 style="min-height: 120px;">Elevate Your Business With High-Performance Websites <br>
+    <span id="typewriter" style="color:var(--accent); border-right: 3px solid var(--accent); padding-right: 5px;"></span>
+</h1>
+
+
+
             <p>DigiMoms specializes in creating premium, "Modern Ecommerce-style responsive websites that drive results. From single pages to complex E-commerce platforms, we build digital success stories.</p>
             <div class="hero-btns">
                 <button class="btn btn-p" onclick="window.location='#plans'">Explore Plans</button>
@@ -1023,6 +1033,56 @@
             setTimeout(showEidPopup, 5000);
         });
 
+
+
+
+
+// --- 1. TYPEWRITER EFFECT LOGIC ---
+        const words = ["Premium Websites", "E-commerce Solutions", "Modern UI Designs", "High-Performance Code", "West Bengal's Best Agency"];
+        let wordIdx = 0, charIdx = 0, isDel = false;
+
+        function typeEffect() {
+            const target = document.getElementById("typewriter");
+            const currentWord = words[wordIdx];
+            
+            if (isDel) {
+                target.textContent = currentWord.substring(0, charIdx - 1);
+                charIdx--;
+            } else {
+                target.textContent = currentWord.substring(0, charIdx + 1);
+                charIdx++;
+            }
+
+            if (!isDel && charIdx === currentWord.length) {
+                isDel = true;
+                setTimeout(typeEffect, 2000); // লেখার পর ২ সেকেন্ড থামবে
+            } else if (isDel && charIdx === 0) {
+                isDel = false;
+                wordIdx = (wordIdx + 1) % words.length;
+                setTimeout(typeEffect, 500);
+            } else {
+                setTimeout(typeEffect, isDel ? 50 : 150);
+            }
+        }
+
+        // --- 2. SCROLL REVEAL LOGIC ---
+        function revealOnScroll() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+
+        // Initialize Effects
+        window.addEventListener('load', () => {
+            typeEffect(); // টাইপিং শুরু হবে
+            revealOnScroll(); // প্রথমবার চেক করবে
+        });
+        window.addEventListener("scroll", revealOnScroll);
 
 
 

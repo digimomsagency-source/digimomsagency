@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans text-slate-900">
+
+    <nav class="bg-indigo-700 p-4 text-white shadow-xl sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center space-x-2"><i class="fas fa-robot text-2xl"></i><h1 class="text-xl font-bold uppercase">DigiMoms</h1></div>
+        <button id="logoutBtn" class="bg-red-500 px-4 py-2 rounded-lg text-sm font-bold shadow-lg">Logout</button>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Profile & Payout Section -->
+        <div class="mb-8 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <h2 class="text-3xl font-black text-slate-800">Hello, <span id="worker-name">Champ</span>!</h2>
+                <p id="worker-phone" class="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">ID: --</p>
+                <button onclick="toggleModal('profileModal')" class="mt-4 bg-slate-100 text-indigo-600 px-6 py-2 rounded-xl font-black text-[10px] uppercase border border-indigo-100">Edit Profile & Bank</button>
+            </div>
+            <div class="text-center">
+                <button id="requestPayoutBtn" class="bg-emerald-500 text-white px-10 py-5 rounded-[2rem] font-black uppercase text-xs shadow-xl disabled:opacity-30" disabled>Request Payout</button>
+                <p class="text-[9px] font-bold text-slate-400 mt-3 uppercase">Min. ₹200 required to withdraw</p>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            <div class="bg-white p-6 rounded-[2rem] border-b-4 border-indigo-600 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase">Main Wallet</p><h3 class="text-3xl font-black text-slate-800" id="worker-wallet">₹0.00</h3></div>
+            <div class="bg-white p-6 rounded-[2rem] border-b-4 border-emerald-500 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase">Locked Bonus</p><h3 class="text-3xl font-black text-emerald-600" id="locked-bonus">₹0.00</h3></div>
+            <div class="bg-white p-6 rounded-[2rem] border-b-4 border-blue-500 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase">Total Leads</p><h3 class="text-3xl font-black" id="total-leads">0</h3></div>
+            <div class="bg-white p-6 rounded-[2rem] border-b-4 border-amber-500 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase">Active Sales</p><h3 class="text-3xl font-black" id="pending-leads">0</h3></div>
+        </div>
+
+        <!-- Training Section -->
+        <div id="training-content" class="mt-10"></div>
+
+        <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="submit-lead.html" class="flex items-center justify-between bg-indigo-600 text-white p-8 rounded-[2.5rem] shadow-xl transition transform hover:scale-[1.02]"><div class="flex items-center space-x-4"><i class="fas fa-plus-circle text-3xl"></i><div><p class="font-black text-xl uppercase">Submit Lead</p><p class="text-[10px] text-indigo-200">Start new registration</p></div></div><i class="fas fa-chevron-right opacity-30"></i></a>
+            <a href="proposal.html" class="flex items-center justify-between bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl transition transform hover:scale-[1.02]"><div class="flex items-center space-x-4"><i class="fas fa-briefcase text-3xl"></i><div><p class="font-black text-xl uppercase">Proposal Dept</p><p class="text-[10px] text-slate-400">Marketplace & Closing</p></div></div><i class="fas fa-chevron-right opacity-30"></i></a>
+        </div>
+
+        <!-- My Leads Table -->
+        <div class="mt-12 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><h2 class="font-black text-slate-800 uppercase text-sm tracking-widest">My Recent Leads</h2></div>
+            <div class="overflow-x-auto p-4" id="leads-container"></div>
+        </div>
+
+        <!-- Support & Income Logs (Income Logs Fixed) -->
+        <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-indigo-100 p-8">
+                <h3 class="font-black uppercase text-sm mb-6"><i class="fas fa-headset mr-2 text-indigo-600"></i>Help & Support</h3>
+                <form id="reportForm" class="space-y-4">
+                    <input type="text" id="subject" placeholder="Subject" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none" required>
+                    <textarea id="msg" placeholder="Describe issue..." class="w-full p-4 bg-slate-50 border rounded-2xl h-24 outline-none" required></textarea>
+                    <button type="submit" class="w-full bg-slate-900 text-white font-black py-4 rounded-2xl">Submit Report</button>
+                </form>
+            </div>
+            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-6">
+                <h3 class="font-black uppercase text-sm mb-6"><i class="fas fa-history mr-2 text-indigo-600"></i>Income Logs / আয়ের ইতিহাস</h3>
+                <div id="earning-history" class="space-y-3 overflow-y-auto max-h-[400px]">
+                    <p class="text-center opacity-30 font-bold uppercase text-xs py-10">Fetching history...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-[3rem] p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black uppercase tracking-widest">Profile & Bank</h3><button onclick="toggleModal('profileModal')" class="text-2xl">&times;</button></div>
+            <form id="profileForm" class="space-y-4">
+                <input type="text" id="editName" placeholder="Full Name" class="w-full p-4 bg-slate-50 border rounded-xl font-bold">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="editBank" placeholder="Bank Name" class="p-4 bg-slate-50 border rounded-xl">
+                    <input type="text" id="editAC" placeholder="Account No" class="p-4 bg-slate-50 border rounded-xl">
+                    <input type="text" id="editIFSC" placeholder="IFSC Code" class="p-4 bg-slate-50 border rounded-xl">
+                    <input type="text" id="editUPI" placeholder="UPI ID" class="p-4 bg-slate-50 border rounded-xl">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl uppercase">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+        let curUser = null; let currentWallet = 0;
+
+        async function init() {
+            const { data: { session } } = await mySupabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            curUser = session.user;
+            
+            const { data: prof } = await mySupabase.from('profiles').select('*').eq('id', curUser.id).single();
+            if(prof) {
+                currentWallet = prof.wallet_balance || 0;
+                document.getElementById('worker-name').innerText = prof.full_name;
+                document.getElementById('worker-phone').innerText = 'ID: ' + prof.phone;
+                document.getElementById('worker-wallet').innerText = '₹' + currentWallet.toFixed(2);
+                document.getElementById('locked-bonus').innerText = '₹' + (prof.locked_bonus || 0).toFixed(2);
+                
+                if(currentWallet >= 200) { document.getElementById('requestPayoutBtn').disabled = false; }
+                
+                document.getElementById('editName').value = prof.full_name;
+                document.getElementById('editBank').value = prof.bank_name || '';
+                document.getElementById('editAC').value = prof.account_no || '';
+                document.getElementById('editIFSC').value = prof.ifsc_code || '';
+                document.getElementById('editUPI').value = prof.upi_id || '';
+            }
+
+            loadMyLeads(curUser.id);
+            loadTransactions(curUser.id);
+            loadTraining();
+        }
+
+        async function loadMyLeads(uid) {
+            const { data: leads } = await mySupabase.from('leads').select('*').eq('worker_id', uid).order('created_at', {ascending:false});
+            const container = document.getElementById('leads-container');
+            if(leads && leads.length > 0) {
+                document.getElementById('total-leads').innerText = leads.length;
+                document.getElementById('pending-leads').innerText = leads.filter(l => l.status !== 'completed' && l.status !== 'fake').length;
+                let h = '<table class="w-full text-left text-[10px] font-black uppercase"><thead class="text-slate-400 border-b"><tr><th class="p-4">Business</th><th class="p-4">Status</th></tr></thead><tbody>';
+                leads.forEach(l => { h += `<tr class="border-b last:border-0"><td class="p-4">${l.business_name}</td><td class="p-4"><span class="px-2 py-1 rounded-full ${l.status==='completed'?'bg-emerald-50 text-emerald-600':'bg-slate-100 text-slate-500'} text-[8px]">${l.status}</span></td></tr>`; });
+                container.innerHTML = h + '</tbody></table>';
+            } else { container.innerHTML = '<p class="text-center py-10 opacity-30 font-bold uppercase text-xs">No leads yet</p>'; }
+        }
+
+        async function loadTransactions(uid) {
+            const { data: trans } = await mySupabase.from('transactions').select('*').eq('worker_id', uid).order('created_at', {ascending:false});
+            const div = document.getElementById('earning-history');
+            if(trans && trans.length > 0) {
+                div.innerHTML = "";
+                trans.forEach(t => {
+                    const isInc = t.amount > 0;
+                    div.innerHTML += `<div class="p-4 rounded-2xl border bg-slate-50 flex justify-between items-center"><p class="font-black text-[10px] text-indigo-700 uppercase">${t.description}</p><p class="font-black text-sm ${isInc ? 'text-emerald-600' : 'text-red-600'}">${isInc?'+':''}₹${Math.abs(t.amount).toFixed(2)}</p></div>`;
+                });
+            } else { div.innerHTML = '<p class="text-center py-10 opacity-30 font-bold text-xs uppercase">No history found</p>'; }
+        }
+
+        async function loadTraining() {
+            const { data } = await mySupabase.from('trainings').select('*').or('status.eq.live,status.eq.scheduled').order('scheduled_at', { ascending: true });
+            if (data && data.length > 0) {
+                let t = data[0];
+                document.getElementById('training-content').innerHTML = `<div class="bg-indigo-900 p-8 rounded-[2.5rem] text-white flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div><span class="${t.status==='live'?'bg-red-600 animate-pulse':'bg-indigo-600'} px-3 py-1 rounded-full text-[8px] font-black uppercase">${t.status}</span><h4 class="text-xl font-black uppercase mt-2">${t.title}</h4></div>
+                    <a href="${t.meet_link}" target="_blank" class="bg-white text-indigo-900 px-10 py-4 rounded-2xl font-black uppercase text-xs">Join Now</a>
+                </div>`;
+            }
+        }
+
+        document.getElementById('requestPayoutBtn').addEventListener('click', async () => {
+            if(!confirm(`Send request for ₹${currentWallet.toFixed(2)}?`)) return;
+            const { error } = await mySupabase.from('payout_requests').insert([{ worker_id: curUser.id, amount: currentWallet }]);
+            if(!error) alert("Request Sent!");
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const upd = { full_name: document.getElementById('editName').value, bank_name: document.getElementById('editBank').value, account_no: document.getElementById('editAC').value, ifsc_code: document.getElementById('editIFSC').value, upi_id: document.getElementById('editUPI').value };
+            await mySupabase.from('profiles').update(upd).eq('id', curUser.id);
+            alert("Profile Updated!"); location.reload();
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await mySupabase.from('reports').insert([{ user_id: curUser.id, subject: document.getElementById('subject').value, message: document.getElementById('msg').value }]);
+            alert("Report Sent!"); location.reload();
+        });
+
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await mySupabase.auth.signOut(); window.location.href = 'login.html'; });
+        window.onload = init;
+    </script>
+</body>
+</html>

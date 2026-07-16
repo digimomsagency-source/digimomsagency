@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Dashboard | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-link { @apply flex items-center space-x-3 p-4 rounded-2xl transition-all cursor-pointer text-slate-500 font-bold text-xs uppercase tracking-widest; }
+        .sidebar-link:hover { @apply bg-indigo-50 text-indigo-600; }
+        .sidebar-active { @apply bg-indigo-600 text-white shadow-xl shadow-indigo-200 hover:bg-indigo-700; }
+        .tab-content { display: none; }
+        .tab-active { display: block; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR (Pro Layout) -->
+    <aside class="w-72 bg-white border-r border-slate-100 flex flex-col p-6 hidden lg:flex shadow-sm">
+        <div class="mb-10 flex items-center space-x-3 px-2">
+            <div class="bg-indigo-700 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-university text-white text-lg"></i></div>
+            <h1 class="text-xl font-black uppercase tracking-tighter text-slate-800">DigiMoms</h1>
+        </div>
+        <nav class="flex-1 space-y-1">
+            <p class="px-4 mb-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Partner Menu</p>
+            <div onclick="showTab('home')" id="link-home" class="sidebar-link sidebar-active"><i class="fas fa-th-large w-5"></i><span>Overview</span></div>
+            <div onclick="showTab('team')" id="link-team" class="sidebar-link"><i class="fas fa-users-cog w-5"></i><span>My Network</span></div>
+            <div onclick="showTab('history')" id="link-history" class="sidebar-link"><i class="fas fa-file-invoice-dollar w-5"></i><span>Income Logs</span></div>
+            <div onclick="showTab('support')" id="link-support" class="sidebar-link"><i class="fas fa-headset w-5"></i><span>Support Desk</span></div>
+            <a href="worker-rewards.html" class="menu-link"><i class="fas fas fa-gift w-5"></i><span>My Rewards</span></a>
+        </nav>
+        <div class="mt-auto pt-6 border-t border-slate-100 text-center">
+            <p class="text-[8px] font-black text-red-500 uppercase tracking-widest mb-4 italic">Security: One Account Per Person</p>
+            <button id="sidebarLogout" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-black text-[10px] uppercase hover:bg-red-600 transition">Logout Account</button>
+        </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50">
+        <!-- Mobile & Top Nav -->
+        <nav class="p-4 border-b border-slate-200 sticky top-0 z-50 bg-white/80 backdrop-blur-md flex justify-between items-center px-4 md:px-8">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-indigo-700 text-xl"><i class="fas fa-bars"></i></button>
+                <h2 id="tab-title" class="font-black uppercase tracking-widest text-[10px] text-slate-400 border-l-2 border-indigo-600 pl-3">Dashboard</h2>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[10px] font-black text-slate-800 uppercase" id="top-name">Loading...</p>
+                    <p class="text-[8px] font-bold text-indigo-500 uppercase tracking-widest">Active Partner</p>
+                </div>
+                <button id="logoutBtn" class="bg-red-50 text-red-600 p-2 rounded-xl text-sm lg:hidden"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </nav>
+
+        <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
+
+            <!-- TAB: OVERVIEW (Your Exact Design) -->
+            <div id="tab-home" class="tab-content tab-active space-y-8 animate-in fade-in duration-500">
+                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                    <div class="z-10">
+                        <h2 class="text-3xl font-black text-slate-800">Hello, <span id="worker-name">Champ</span>!</h2>
+                        <p id="worker-phone" class="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">ID: --</p>
+                        <div id="upper-member-box" class="mt-3 inline-flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                            <i class="fas fa-user-tie text-indigo-500 text-[10px]"></i>
+                            <span class="text-[9px] font-black text-indigo-600 uppercase tracking-tighter" id="referrer-info">Invited By: System</span>
+                        </div>
+                        <div class="mt-4"><button onclick="toggleModal('profileModal')" class="bg-slate-100 text-indigo-600 px-6 py-2 rounded-xl font-black text-[10px] uppercase border border-indigo-100 hover:bg-indigo-600 hover:text-white transition">Edit Profile & Bank</button></div>
+                    </div>
+                    <div class="text-center z-10">
+                        <button id="requestPayoutBtn" class="bg-emerald-500 text-white px-10 py-5 rounded-[2rem] font-black uppercase text-xs shadow-xl disabled:opacity-30 transition hover:scale-105" disabled>Request Payout</button>
+                        <p class="text-[9px] font-bold text-slate-400 mt-3 uppercase tracking-widest">Min. ₹200 required to withdraw</p>
+                    </div>
+                    <i class="fas fa-rocket absolute -right-6 -bottom-6 text-9xl text-slate-50 opacity-50"></i>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-center">
+                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-indigo-600 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Main Wallet</p><h3 class="text-2xl font-black text-slate-800" id="worker-wallet">₹0.00</h3></div>
+                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-emerald-500 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Locked Bonus</p><h3 class="text-2xl font-black text-emerald-600" id="locked-bonus">₹0.00</h3></div>
+                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-blue-500 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Leads</p><h3 class="text-2xl font-black" id="total-leads">0</h3></div>
+                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-amber-500 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Sales</p><h3 class="text-2xl font-black" id="pending-leads">0</h3></div>
+                </div>
+
+                <div id="training-content"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="submit-lead.html" class="flex items-center justify-between bg-indigo-600 text-white p-8 rounded-[2.5rem] shadow-xl transition transform hover:scale-[1.02] group"><div class="flex items-center space-x-4"><i class="fas fa-plus-circle text-3xl"></i><div><p class="font-black text-xl uppercase">Submit Lead</p><p class="text-[10px] text-indigo-200">Start new registration</p></div></div><i class="fas fa-chevron-right opacity-30 group-hover:opacity-100"></i></a>
+                    <a href="proposal.html" class="flex items-center justify-between bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl transition transform hover:scale-[1.02] group"><div class="flex items-center space-x-4"><i class="fas fa-briefcase text-3xl"></i><div><p class="font-black text-xl uppercase">Proposal Dept</p><p class="text-[10px] text-slate-400">Marketplace & Closing</p></div></div><i class="fas fa-chevron-right opacity-30 group-hover:opacity-100"></i></a>
+                </div>
+
+                <div class="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><h2 class="font-black text-slate-800 uppercase text-xs tracking-widest">My Combined Activities (Gen & Close)</h2></div>
+                    <div class="overflow-x-auto p-4" id="leads-container"></div>
+                </div>
+            </div>
+
+            <!-- TAB: TEAM -->
+            <div id="tab-team" class="tab-content space-y-8 animate-in slide-in-from-right-10 duration-500">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b font-black text-xs uppercase text-indigo-600 tracking-widest bg-indigo-50/50">My Network (10% Income)</div>
+                        <div id="team-list" class="p-4 space-y-3 overflow-y-auto max-h-[600px]"></div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 bg-slate-900 text-white flex justify-between items-center"><h3 class="font-black uppercase text-xs tracking-widest">Global Top Earners</h3></div>
+                        <div id="leaderboard-list" class="p-6 space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: HISTORY -->
+            <div id="tab-history" class="tab-content space-y-8 animate-in slide-in-from-right-10 duration-500">
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8">
+                    <h3 class="font-black uppercase text-sm mb-6 text-indigo-700 italic">Income Logs / আয়ের ইতিহাস</h3>
+                    <div id="earning-history" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- TAB: SUPPORT (Jio Style) -->
+            <div id="tab-support" class="tab-content space-y-8 animate-in slide-in-from-right-10 duration-500 mb-20">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <div class="bg-white rounded-[2.5rem] shadow-xl border border-indigo-100 overflow-hidden">
+                        <div class="bg-indigo-700 p-8 text-white"><h3 class="font-black uppercase text-lg tracking-tighter">Support Desk</h3><p class="text-indigo-100 text-[10px] font-bold uppercase mt-1">Submit your tickets below</p></div>
+                        <form id="reportForm" class="p-8 space-y-4">
+                            <input type="text" id="subject" placeholder="Subject / বিষয়" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 font-bold" required>
+                            <textarea id="msg" placeholder="Tell us in detail / বিস্তারিত লিখুন..." class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl h-32 outline-none focus:border-indigo-500 font-medium" required></textarea>
+                            <button type="submit" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-indigo-600 transition uppercase tracking-widest text-xs">Submit Report</button>
+                        </form>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-xs uppercase text-slate-400 mb-6 tracking-widest">Recent Ticket Status</h4>
+                        <div id="report-history" class="space-y-4 overflow-y-auto max-h-[600px]"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Edit Profile Modal (FIXED: ALL FIELDS ADDED) -->
+    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-[3rem] p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black uppercase tracking-widest">Edit Profile & Bank</h3><button onclick="toggleModal('profileModal')" class="text-2xl text-red-500">&times;</button></div>
+            <form id="profileForm" class="space-y-4">
+                <input type="text" id="editName" placeholder="Full Name" class="w-full p-4 bg-slate-50 border rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-600">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="editBank" placeholder="Bank Name" class="p-4 bg-slate-50 border rounded-xl outline-none">
+                    <input type="text" id="editAC" placeholder="Account Number" class="p-4 bg-slate-50 border rounded-xl outline-none">
+                    <input type="text" id="editIFSC" placeholder="IFSC Code" class="p-4 bg-slate-50 border rounded-xl outline-none">
+                    <input type="text" id="editUPI" placeholder="UPI ID (e.g. name@paytm)" class="p-4 bg-slate-50 border rounded-xl outline-none">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl uppercase transition hover:bg-indigo-700">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+        let curUser = null; let currentWallet = 0;
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('tab-active'));
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('sidebar-active'));
+            document.getElementById('tab-'+tabId).classList.add('tab-active');
+            document.getElementById('link-'+tabId).classList.add('sidebar-active');
+            document.getElementById('tab-title').innerText = tabId;
+        }
+
+        async function init() {
+            const { data: { session } } = await mySupabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            curUser = session.user;
+            
+            const { data: prof } = await mySupabase.from('profiles').select('*').eq('id', curUser.id).single();
+            if(prof) {
+                currentWallet = prof.wallet_balance || 0;
+                document.getElementById('worker-name').innerText = prof.full_name;
+                document.getElementById('top-name').innerText = prof.full_name;
+                document.getElementById('worker-phone').innerText = 'Partner ID: ' + prof.phone;
+                document.getElementById('worker-wallet').innerText = '₹' + currentWallet.toFixed(2);
+                document.getElementById('locked-bonus').innerText = '₹' + (prof.locked_bonus || 0).toFixed(2);
+                if(currentWallet >= 200) { document.getElementById('requestPayoutBtn').disabled = false; }
+                if(prof.referrer_id) {
+                    const { data: ref } = await mySupabase.from('profiles').select('full_name, phone').eq('id', prof.referrer_id).single();
+                    if(ref) document.getElementById('referrer-info').innerText = `Invited By: ${ref.full_name}`;
+                }
+                document.getElementById('editName').value = prof.full_name;
+                document.getElementById('editBank').value = prof.bank_name || '';
+                document.getElementById('editAC').value = prof.account_no || '';
+                document.getElementById('editIFSC').value = prof.ifsc_code || '';
+                document.getElementById('editUPI').value = prof.upi_id || '';
+            }
+
+            loadUnifiedLeads(curUser.id);
+            loadTransactions(curUser.id);
+            loadTraining();
+            loadLeaderboard();
+            loadLowerTeam(curUser.id);
+            loadComplaints(curUser.id);
+        }
+
+        async function loadComplaints(uid) {
+            const { data: reports } = await mySupabase.from('reports').select('*').eq('user_id', uid).order('created_at', {ascending:false});
+            const div = document.getElementById('report-history');
+            if(reports) {
+                div.innerHTML = "";
+                reports.forEach(r => {
+                    const dt = new Date(r.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                    div.innerHTML += `<div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm mb-3">
+                        <div class="flex justify-between items-start mb-2"><span class="text-[8px] font-black uppercase text-slate-400 tracking-widest">${dt}</span><span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${r.status==='resolved'?'bg-emerald-100 text-emerald-600':'bg-amber-100 text-amber-600'}">${r.status}</span></div>
+                        <p class="font-black text-[10px] uppercase text-slate-800">${r.subject}</p>
+                        <p class="text-[10px] text-slate-500 mt-1">${r.message}</p>
+                        ${r.admin_reply ? `<div class="mt-4 p-4 bg-indigo-50 rounded-2xl border-l-4 border-indigo-600"><p class="text-[8px] font-black text-indigo-700 uppercase mb-1">Admin Response:</p><p class="text-[10px] font-bold italic text-slate-700">${r.admin_reply}</p></div>` : ''}
+                    </div>`;
+                });
+            }
+        }
+
+        async function loadUnifiedLeads(uid) {
+            const { data: leads } = await mySupabase.from('leads').select('*').or(`worker_id.eq.${uid},closer_id.eq.${uid}`).order('created_at', {ascending:false});
+            const container = document.getElementById('leads-container');
+            if(leads && leads.length > 0) {
+                document.getElementById('total-leads').innerText = leads.length;
+                document.getElementById('pending-leads').innerText = leads.filter(l => l.status !== 'completed' && l.status !== 'fake').length;
+                let h = '<table class="w-full text-left text-[10px] font-black uppercase"><thead class="text-slate-400 border-b"><tr><th class="p-4">Lead Detail</th><th class="p-4">Plan</th><th class="p-4">Status</th></tr></thead><tbody>';
+                leads.forEach(l => {
+                    let role = l.worker_id === uid ? '<span class="text-indigo-500">[GEN]</span>' : '<span class="text-emerald-500">[CLOSE]</span>';
+                    let sCol = l.status === 'completed' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-500 bg-slate-100';
+                    h += `<tr class="border-b last:border-0 hover:bg-slate-50"><td class="p-4">${role} ${l.business_name}</td><td class="p-4 font-bold text-slate-700">${l.plan_type}</td><td class="p-4"><span class="px-2 py-1 rounded-full text-[8px] ${sCol}">${l.status}</span></td></tr>`;
+                });
+                container.innerHTML = h + '</tbody></table>';
+            }
+        }
+
+        async function loadTransactions(uid) {
+            const { data: trans } = await mySupabase.from('transactions').select('*').eq('worker_id', uid).order('created_at', {ascending:false});
+            const div = document.getElementById('earning-history');
+            if(trans && trans.length > 0) {
+                div.innerHTML = "";
+                trans.forEach(t => {
+                    const isInc = parseFloat(t.amount) > 0;
+                    div.innerHTML += `<div class="p-4 rounded-2xl border bg-slate-50 flex justify-between items-center mb-2 shadow-sm"><p class="font-black text-[10px] text-indigo-700 uppercase tracking-tighter">${t.description}</p><p class="font-black text-sm ${isInc ? 'text-emerald-600' : 'text-red-600'}">${isInc?'+':''}₹${Math.abs(t.amount).toFixed(2)}</p></div>`;
+                });
+            }
+        }
+
+        async function loadTraining() {
+            const { data } = await mySupabase.from('trainings').select('*').or('status.eq.live,status.eq.scheduled').order('scheduled_at', { ascending: true });
+            if (data && data.length > 0) {
+                let t = data[0];
+                let timeStr = new Date(t.scheduled_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+                document.getElementById('training-content').innerHTML = `<div class="bg-indigo-900 p-8 rounded-[2.5rem] text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl border border-indigo-700 mt-10"><div><div class="flex items-center gap-2 mb-2"><span class="${t.status==='live'?'bg-red-600 animate-pulse':'bg-slate-700'} px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest">${t.status}</span><span class="text-[9px] font-bold text-indigo-300 uppercase">${timeStr}</span></div><h4 class="text-xl font-black uppercase tracking-tight">${t.title}</h4></div><a href="${t.meet_link}" target="_blank" class="bg-white text-indigo-900 px-10 py-4 rounded-2xl font-black uppercase text-xs shadow-xl transition hover:scale-105">Join Now</a></div>`;
+            }
+        }
+
+        async function loadLeaderboard() {
+            const { data } = await mySupabase.from('profiles').select('full_name, wallet_balance').order('wallet_balance', {ascending:false}).limit(5);
+            const div = document.getElementById('leaderboard-list');
+            if(data) {
+                div.innerHTML = "";
+                data.forEach((p, i) => {
+                    div.innerHTML += `<div class="flex justify-between items-center p-5 bg-slate-50 rounded-3xl border border-slate-100"><div class="flex items-center gap-4"><span class="w-8 h-8 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-[10px] font-black">${i+1}</span><p class="font-black text-[11px] uppercase text-slate-700">${p.full_name}</p></div><p class="font-black text-indigo-600 text-sm">₹${p.wallet_balance.toFixed(0)}</p></div>`;
+                });
+            }
+        }
+
+        async function loadLowerTeam(uid) {
+            const { data: team } = await mySupabase.from('profiles').select('id, full_name, phone, wallet_balance').eq('referrer_id', uid);
+            const div = document.getElementById('team-list');
+            if(team && team.length > 0) {
+                div.innerHTML = "";
+                for (const m of team) {
+                    const { data: myComm } = await mySupabase.from('transactions').select('amount').eq('worker_id', uid).like('description', `%from ${m.id}%`);
+                    let incomeFromHim = myComm ? myComm.reduce((sum, t) => sum + t.amount, 0) : 0;
+                    div.innerHTML += `<div class="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 mb-3"><div class="flex justify-between items-start"><div><p class="font-black text-[10px] text-slate-800 uppercase leading-none">${m.full_name}</p><p class="text-[8px] text-slate-400 font-bold mt-1">${m.phone}</p></div><div class="text-right"><p class="text-[7px] font-black text-indigo-400 uppercase">10% Earn</p><p class="text-[10px] font-black text-indigo-600">₹${incomeFromHim.toFixed(2)}</p></div></div></div>`;
+                }
+            }
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const upd = { full_name: document.getElementById('editName').value, bank_name: document.getElementById('editBank').value, account_no: document.getElementById('editAC').value, ifsc_code: document.getElementById('editIFSC').value, upi_id: document.getElementById('editUPI').value };
+            await mySupabase.from('profiles').update(upd).eq('id', curUser.id);
+            alert("Success!"); location.reload();
+        });
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await mySupabase.from('reports').insert([{ user_id: curUser.id, subject: document.getElementById('subject').value, message: document.getElementById('msg').value }]);
+            alert("Support Ticket Raised!"); location.reload();
+        });
+
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await mySupabase.auth.signOut(); window.location.href = 'login.html'; });
+        document.getElementById('sidebarLogout').addEventListener('click', async () => { await mySupabase.auth.signOut(); window.location.href = 'login.html'; });
+        window.onload = init;
+    </script>
+</body>
+</html>

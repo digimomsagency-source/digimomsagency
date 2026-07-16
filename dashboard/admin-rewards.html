@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Rewards Control | Admin</title>
+    <script src="admin-guard.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="text-3xl font-black uppercase italic text-indigo-400">Logistics & Rewards</h2>
+        <button onclick="toggleModal('extraGiftModal')" class="bg-indigo-600 px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-xl">+ Send Extra Gift</button>
+    </div>
+
+    <!-- Eligible Workers (5+ Sales) -->
+    <div class="mb-10">
+        <h3 class="text-xs font-black uppercase text-slate-500 mb-4 tracking-widest">Target Achievers (5+ Sales)</h3>
+        <div class="bg-slate-900 rounded-[2.5rem] border border-slate-800 overflow-hidden shadow-2xl">
+            <table class="w-full text-left text-[10px] font-black uppercase">
+                <thead class="bg-slate-800 text-indigo-300 border-b border-slate-700">
+                    <tr><th class="p-6">Worker Info</th><th class="p-6">Sales</th><th class="p-6">Action</th></tr>
+                </thead>
+                <tbody id="eligible-rows" class="text-slate-400"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Active Shipments -->
+    <div>
+        <h3 class="text-xs font-black uppercase text-slate-500 mb-4 tracking-widest">All Sent Rewards & Status</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="active-shipments"></div>
+    </div>
+
+    <!-- Modal for Extra Gift -->
+    <div id="extraGiftModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 w-full max-w-lg rounded-[3rem] border border-slate-800 p-8">
+            <h3 class="text-xl font-black uppercase mb-6">Send New Gift</h3>
+            <form id="extraGiftForm" class="space-y-4 text-black">
+                <input type="tel" id="targetPhone" placeholder="Worker Mobile Number" class="w-full p-4 rounded-xl font-bold" required>
+                <input type="text" id="items" placeholder="Items (e.g. Mug, Watch, Cash)" class="w-full p-4 rounded-xl font-bold" required>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl uppercase">Initiate Delivery</button>
+                <button type="button" onclick="toggleModal('extraGiftModal')" class="w-full text-slate-500 font-bold py-2 uppercase text-[10px]">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function load() {
+            // ১. ৫ সেল পূর্ণকারীদের খোঁজা
+            const { data: eligible } = await mySupabase.from('profiles').select('*').gte('sale_count', 5);
+            const eligTable = document.getElementById('eligible-rows');
+            eligTable.innerHTML = "";
+            
+            for(const w of (eligible || [])) {
+                const { data: hasKit } = await mySupabase.from('rewards').select('*').eq('worker_id', w.id).eq('is_welcome_kit', true).maybeSingle();
+                if(!hasKit) {
+                    eligTable.innerHTML += `<tr class="border-b border-slate-800"><td class="p-6 text-white font-bold">${w.full_name}<br><span class="text-slate-500">${w.phone}</span></td><td class="p-6">${w.sale_count}</td><td class="p-6"><button onclick="sendWelcomeKit('${w.id}')" class="bg-emerald-600 px-4 py-2 rounded-xl text-[10px] font-black">SEND WELCOME KIT</button></td></tr>`;
+                }
+            }
+
+            // ২. সব শিপমেন্ট লোড করা
+            const { data: allRewards } = await mySupabase.from('rewards').select('*, profiles(full_name, phone)').order('created_at', {ascending: false});
+            const shipGrid = document.getElementById('active-shipments');
+            shipGrid.innerHTML = "";
+            
+            allRewards.forEach(r => {
+                shipGrid.innerHTML += `
+                <div class="bg-slate-900 p-6 rounded-[2rem] border border-slate-800 shadow-xl">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[8px] font-black px-2 py-1 bg-indigo-600 rounded-full">${r.status}</span>
+                        <button onclick="deleteReward(${r.id})" class="text-red-500 text-xs"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <h4 class="font-black text-white uppercase text-sm">${r.profiles.full_name}</h4>
+                    <p class="text-[9px] text-slate-500 mb-4">${r.profiles.phone}</p>
+                    <div class="bg-black/30 p-4 rounded-2xl mb-4 border border-white/5">
+                        <p class="text-[8px] font-black text-indigo-400 uppercase mb-1">GIFT ITEMS:</p>
+                        <p class="text-xs font-bold text-slate-300">${r.items_list}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <button onclick="updateStatus(${r.id})" class="w-full bg-slate-800 py-2 rounded-xl text-[8px] font-black uppercase">Change Status</button>
+                        <button onclick="updateTracking(${r.id})" class="w-full bg-slate-800 py-2 rounded-xl text-[8px] font-black uppercase">Add Track ID & Link</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function sendWelcomeKit(uid) {
+            const items = prompt("Enter Welcome Kit Items (e.g. Certificate, ID Card, Mug):");
+            if(!items) return;
+            await mySupabase.from('rewards').insert([{ worker_id: uid, items_list: items, is_welcome_kit: true }]);
+            load();
+        }
+
+        document.getElementById('extraGiftForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ph = document.getElementById('targetPhone').value;
+            const items = document.getElementById('items').value;
+            const { data: worker } = await mySupabase.from('profiles').select('id').eq('phone', ph).single();
+            if(!worker) return alert("Worker not found!");
+            await mySupabase.from('rewards').insert([{ worker_id: worker.id, items_list: items }]);
+            alert("Gift Initialized!"); location.reload();
+        });
+
+        async function updateStatus(id) {
+            const s = prompt("Enter Status (Processing / Packed / Shipped / Out for Delivery / Delivered):");
+            if(s) await mySupabase.from('rewards').update({ status: s }).eq('id', id); load();
+        }
+
+        async function updateTracking(id) {
+            const tid = prompt("Enter Tracking ID:");
+            const tlink = prompt("Enter Tracking Website Link:");
+            if(tid && tlink) await mySupabase.from('rewards').update({ tracking_id: tid, tracking_link: tlink }).eq('id', id); load();
+        }
+
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        window.onload = load;
+    </script>
+</body>
+</html>

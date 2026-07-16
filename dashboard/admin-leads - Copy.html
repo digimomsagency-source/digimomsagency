@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="admin-guard.js"></script>
+    <meta charset="UTF-8"><title>Project Master Control | DigiMoms Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="text-3xl font-black uppercase italic tracking-tighter text-indigo-400">Deal Finalization & Stats</h2>
+        <button onclick="load()" class="bg-indigo-600 px-6 py-2 rounded-xl text-xs font-black uppercase shadow-lg"><i class="fas fa-sync mr-2"></i> Refresh Queue</button>
+    </div>
+    
+    <div class="overflow-x-auto bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl">
+        <table class="w-full text-left text-[10px] font-black uppercase tracking-widest">
+            <thead class="bg-slate-800 text-indigo-400 border-b border-slate-700">
+                <tr>
+                    <th class="p-6">Client & Business Info</th>
+                    <th class="p-6">Staff Details (Phone)</th>
+                    <th class="p-6">Negotiation Note</th>
+                    <th class="p-6">Plan Selection</th>
+                    <th class="p-6 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody id="lead-rows" class="text-slate-400"></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function load() {
+            // জেনারেটর এবং ক্লোজারের নাম ও ফোন নম্বর একবারে নিয়ে আসা
+            const { data: leads } = await mySupabase.from('leads').select(`
+                *,
+                gen:worker_id (full_name, phone),
+                cls:closer_id (full_name, phone)
+            `).order('created_at', {ascending:false});
+
+            const tbody = document.getElementById('lead-rows'); tbody.innerHTML = "";
+            if(!leads || leads.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center opacity-30">NO LEADS FOUND</td></tr>'; return; }
+
+            leads.forEach(l => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800 hover:bg-white/5 transition">
+                    <td class="p-6">
+                        <p class="text-white text-sm font-black">${l.business_name || 'N/A'}</p>
+                        <p class="text-indigo-400 mt-1">${l.service_type} | ${l.business_location || 'N/A'}</p>
+                        <div class="mt-2 text-emerald-500 font-bold uppercase">Ph: ${l.customer_phone} | WA: ${l.whatsapp_number || 'N/A'}</div>
+                    </td>
+                    <td class="p-6">
+                        <div class="mb-2"><p class="text-slate-500 text-[8px]">GEN PH:</p><p class="text-white text-xs font-bold">${l.gen?.phone || 'SYSTEM'}</p></div>
+                        <div><p class="text-slate-500 text-[8px]">CLS PH:</p><p class="text-indigo-400 text-xs font-bold">${l.cls?.phone || 'PENDING'}</p></div>
+                    </td>
+                    <td class="p-6 max-w-[200px]">
+                        <p class="text-amber-500 italic text-[9px] leading-relaxed">${l.proposal_note || 'No special demand recorded'}</p>
+                        <span class="mt-3 inline-block px-2 py-1 rounded bg-slate-800 border border-slate-700 text-[8px] uppercase">${l.status}</span>
+                    </td>
+                    <td class="p-6">
+                        ${l.status === 'approved_by_proposal' ? `
+                            <select id="pType-${l.id}" class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[10px] font-black w-full outline-none text-indigo-400">
+                                <option value="Starter">Starter (₹1499)</option>
+                                <option value="Business">Business (₹4999)</option>
+                                <option value="Premium">Premium (₹12999)</option>
+                                <option value="Custom">Custom Plan</option>
+                            </select>
+                        ` : `<p class="text-slate-600 font-bold italic">${l.plan_type} Finalized</p>`}
+                    </td>
+                    <td class="p-6 text-center">
+                        ${l.status === 'approved_by_proposal' ? 
+                            `<button onclick="finish(${l.id})" class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-black text-[9px] hover:bg-emerald-500 transition shadow-xl">COMPLETE</button>` : 
+                            `<i class="fas fa-check-circle text-slate-700 text-lg"></i>`}
+                    </td>
+                </tr>`;
+            });
+        }
+
+        async function finish(id) {
+            const plan = document.getElementById('pType-'+id).value;
+            let isCustom = false, gComm = 0, cComm = 0;
+
+            if(plan === 'Custom') {
+                isCustom = true;
+                gComm = parseFloat(prompt("Enter Generator Commission (0 if Private):") || 0);
+                cComm = parseFloat(prompt("Enter Closer Commission (Total if Private):") || 0);
+            }
+
+            const dc = prompt("Domain Cost:"); if(dc===null) return;
+            const hc = prompt("Hosting Cost:"); if(hc===null) return;
+
+            // নতুন SQL ফাংশন (finalize_deal_v4) কল করা
+            const { error } = await mySupabase.rpc('finalize_deal_v4', { 
+                target_lead_id: id, 
+                adm_domain_cost: parseFloat(dc), 
+                adm_hosting_cost: parseFloat(hc),
+                selected_plan_name: plan,
+                is_custom: isCustom,
+                custom_gen_amt: gComm,
+                custom_cls_amt: cComm
+            });
+
+            if(!error) { alert("Mission Successful! Commissions Shared."); load(); }
+            else { alert("Error: " + error.message); }
+        }
+        window.onload = load;
+    </script>
+</body>
+</html>

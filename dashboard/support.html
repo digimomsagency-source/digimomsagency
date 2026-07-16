@@ -1,0 +1,22 @@
+<!-- Support / Report Form -->
+<div class="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100">
+    <h3 class="text-xl font-black text-slate-800 uppercase">Submit a Complaint / রিপোর্ট করুন</h3>
+    <form id="reportForm" class="space-y-4 mt-6">
+        <input type="text" id="repSubject" placeholder="Subject (e.g. Payment Issue)" class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200" required>
+        <textarea id="repMessage" placeholder="Detailed message..." class="w-full p-4 rounded-xl bg-slate-50 border border-slate-200 h-32" required></textarea>
+        <button type="submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl">SUBMIT REPORT</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('reportForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const { data: { user } } = await mySupabase.auth.getUser();
+        const { error } = await mySupabase.from('reports').insert([{
+            user_id: user.id,
+            subject: document.getElementById('repSubject').value,
+            message: document.getElementById('repMessage').value
+        }]);
+        if(!error) alert("Report Sent! Check status later.");
+    });
+</script>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="admin-guard.js"></script>
+    <meta charset="UTF-8"><title>Payout Management | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="text-3xl font-black uppercase italic tracking-tighter">Finance & Payouts</h2>
+        <div class="flex gap-2">
+            <button onclick="showTab('pending')" id="tab-p" class="bg-indigo-600 px-6 py-2 rounded-xl text-[10px] font-black uppercase">Pending</button>
+            <button onclick="showTab('history')" id="tab-h" class="bg-slate-800 px-6 py-2 rounded-xl text-[10px] font-black uppercase text-slate-400">History</button>
+        </div>
+    </div>
+
+    <!-- PENDING REQUESTS -->
+    <div id="sec-pending" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <p class="col-span-full text-center py-20 opacity-30 font-bold uppercase text-xs">Loading requests...</p>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="sec-history" class="hidden overflow-x-auto bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl">
+        <table class="w-full text-left text-[10px] font-black uppercase">
+            <thead class="bg-slate-800 text-indigo-400 border-b border-slate-700">
+                <tr><th class="p-6">Worker Name</th><th class="p-6">Amount Paid</th><th class="p-6">Transaction ID</th><th class="p-6 text-right">Date</th></tr>
+            </thead>
+            <tbody id="history-rows" class="text-slate-400"></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        function showTab(t) {
+            document.getElementById('sec-pending').classList.toggle('hidden', t !== 'pending');
+            document.getElementById('sec-history').classList.toggle('hidden', t !== 'history');
+            document.getElementById('tab-p').className = t === 'pending' ? "bg-indigo-600 px-6 py-2 rounded-xl text-[10px] font-black uppercase" : "bg-slate-800 px-6 py-2 rounded-xl text-[10px] font-black uppercase text-slate-400";
+            document.getElementById('tab-h').className = t === 'history' ? "bg-indigo-600 px-6 py-2 rounded-xl text-[10px] font-black uppercase" : "bg-slate-800 px-6 py-2 rounded-xl text-[10px] font-black uppercase text-slate-400";
+            if(t === 'pending') loadPending(); else loadHistory();
+        }
+
+        async function loadPending() {
+            const { data } = await mySupabase.from('payout_requests').select('*, profiles(full_name, phone, wallet_balance)').eq('status', 'pending');
+            const div = document.getElementById('sec-pending');
+            div.innerHTML = data && data.length > 0 ? "" : '<p class="col-span-full text-center py-20 opacity-30 font-bold text-xs uppercase">No pending requests</p>';
+            if(data) data.forEach(r => {
+                div.innerHTML += `
+                <div class="bg-slate-900 p-8 rounded-[3rem] border border-slate-800 shadow-2xl">
+                    <h3 class="text-xl font-black text-white">${r.profiles.full_name}</h3>
+                    <p class="text-xs font-bold text-indigo-400 mb-6">${r.profiles.phone}</p>
+                    <div class="bg-slate-950 p-6 rounded-2xl mb-6">
+                        <p class="text-[9px] text-slate-500 uppercase font-black">Requesting Total</p>
+                        <p class="text-3xl font-black text-emerald-400">₹${r.amount.toFixed(2)}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="admin-worker-details.html?id=${r.worker_id}" class="bg-slate-800 py-4 rounded-xl text-[9px] font-black text-center">VIEW QR</a>
+                        <button onclick="payComplete(${r.id}, '${r.worker_id}', ${r.amount})" class="bg-indigo-600 py-4 rounded-xl text-[9px] font-black">PAY & FINISH</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function payComplete(reqId, uid, amt) {
+            const txId = prompt("Enter Paytm/UPI Transaction ID:");
+            if(!txId) return;
+
+            // ১. ব্যালেন্স কমানো
+            const { error: decErr } = await mySupabase.rpc('decrement_wallet', { row_id: uid, amount_to_cut: amt });
+            
+            if(!decErr) {
+                // ২. রিকোয়েস্ট সাকসেস করা
+                await mySupabase.from('payout_requests').update({ status: 'paid' }).eq('id', reqId);
+                // ৩. ট্রানজ্যাকশন হিস্ট্রিতে রেকর্ড (Description এ Transaction ID সহ)
+                await mySupabase.from('transactions').insert([{ 
+                    worker_id: uid, amount: -amt, type: 'payout', 
+                    description: 'Payout: ' + txId 
+                }]);
+                alert("Payment Confirmed!"); loadPending();
+            }
+        }
+
+        async function loadHistory() {
+            const { data } = await mySupabase.from('payout_requests').select('*, profiles(full_name)').eq('status', 'paid').order('created_at', {ascending: false});
+            const tbody = document.getElementById('history-rows');
+            tbody.innerHTML = "";
+            if(data) data.forEach(r => {
+                tbody.innerHTML += `<tr class="border-b border-slate-800"><td class="p-6 text-white font-black">${r.profiles.full_name}</td><td class="p-6 text-emerald-400 font-black">₹${r.amount.toFixed(2)}</td><td class="p-6 text-indigo-400 font-mono">PAID</td><td class="p-6 text-right text-slate-500">${new Date(r.created_at).toLocaleDateString()}</td></tr>`;
+            });
+        }
+
+        window.onload = loadPending;
+    </script>
+</body>
+</html>

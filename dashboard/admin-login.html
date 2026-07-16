@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Gate | DigiMoms Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- AI Face API Library -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { background-color: #020617; font-family: 'Inter', sans-serif; overflow-y: auto; }
+        .glass-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); }
+        .status-box { background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.2); }
+    </style>
+</head>
+<body class="text-slate-300 min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-md w-full glass-card p-10 rounded-[3rem] shadow-2xl text-center relative border-t-4 border-indigo-600">
+        <div class="mb-8">
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-indigo-500/20">
+                <i class="fas fa-user-shield text-white text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Admin Portal</h2>
+            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Authorized Personnel Only</p>
+        </div>
+
+        <!-- Password Login (Always Visible) -->
+        <form id="passLoginForm" class="space-y-4 mb-8">
+            <input type="password" id="admPass" placeholder="Enter Master Password" class="w-full p-4 bg-black border border-white/10 rounded-2xl outline-none focus:border-indigo-500 text-white text-center font-bold tracking-widest">
+            <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition shadow-lg">Login with Password</button>
+        </form>
+
+        <div class="relative flex py-4 items-center">
+            <div class="flex-grow border-t border-white/5"></div>
+            <span class="flex-shrink mx-4 text-slate-700 text-[9px] font-black uppercase tracking-widest">Biometric Option</span>
+            <div class="flex-grow border-t border-white/5"></div>
+        </div>
+
+        <!-- Face Login Section -->
+        <div id="faceSection">
+            <div id="camArea" class="hidden mb-6 relative rounded-[2rem] overflow-hidden border-2 border-indigo-500/30 aspect-square shadow-inner bg-black">
+                <video id="video" width="100%" height="100%" autoplay muted class="object-cover"></video>
+                <div class="absolute bottom-0 w-full bg-indigo-600/90 py-2 text-[9px] text-white font-black uppercase" id="faceStatus">Initializing...</div>
+                <div class="absolute top-0 left-0 w-full h-1 bg-indigo-400 shadow-[0_0_15px_indigo] animate-bounce"></div>
+            </div>
+            
+            <button onclick="startFaceLogin()" id="faceBtn" class="w-full bg-slate-800 text-slate-300 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition border border-white/5">
+                <i class="fas fa-eye mr-2"></i> Unlock with Face ID
+            </button>
+        </div>
+
+        <p class="mt-10 text-slate-800 text-[8px] font-black uppercase tracking-[0.4em]">DigiMoms Core Security v4.0</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const video = document.getElementById('video');
+        const faceStatus = document.getElementById('faceStatus');
+        const faceBtn = document.getElementById('faceBtn');
+
+        // --- প্রফেশনাল ভয়েস ইঞ্জিন (English) ---
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'en-IND';
+            msg.rate = 0.9; // গম্ভীর শোনানোর জন্য একটু স্লো
+            msg.pitch = 0.8; // রোবোটিক ইফেক্ট এর জন্য পিচ কম
+            window.speechSynthesis.speak(msg);
+        }
+
+        // ১. পাসওয়ার্ড লগইন
+        document.getElementById('passLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('admPass').value;
+            const { data } = await mySupabase.from('admin_config').select('admin_pass').single();
+            
+            if(data.admin_pass === pass) {
+                speak("Password verified. Welcome back, Admin.");
+                sessionStorage.setItem('admin_verified', 'true');
+                setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+            } else { 
+                speak("Access denied. Wrong password.");
+                alert("Wrong Password!"); 
+            }
+        });
+
+        // ২. ফেস লগইন লজিক
+        async function startFaceLogin() {
+            faceBtn.disabled = true;
+            faceBtn.innerText = "Please Wait...";
+            document.getElementById('camArea').classList.remove('hidden');
+            
+            faceStatus.innerText = "Loading AI Engine...";
+            speak("System initializing. Please wait.");
+
+            try {
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+
+                faceStatus.innerText = "Camera Active";
+                speak("Camera active. Please look at the screen.");
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                video.srcObject = stream;
+
+                video.addEventListener('play', () => {
+                    let lastSpeechTime = 0;
+                    const scanInterval = setInterval(async () => {
+                        const result = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+
+                        if (result) {
+                            faceStatus.innerText = "Authenticating...";
+                            const { data } = await mySupabase.from('admin_config').select('admin_face_data').single();
+                            
+                            if(!data || !data.admin_face_data) {
+                                speak("No master face record found. Use your password.");
+                                clearInterval(scanInterval); location.reload(); return;
+                            }
+
+                            const savedDescriptor = new Float32Array(JSON.parse(data.admin_face_data));
+                            const distance = faceapi.euclideanDistance(result.descriptor, savedDescriptor);
+
+                            if (distance < 0.5) {
+                                clearInterval(scanInterval);
+                                faceStatus.innerText = "Identity Verified";
+                                speak("Face recognized. Access granted.");
+                                sessionStorage.setItem('admin_verified', 'true');
+                                setTimeout(() => { window.location.href = 'admin.html'; }, 1500);
+                            } else {
+                                faceStatus.innerText = "Unauthorized Face";
+                                if(Date.now() - lastSpeechTime > 4000) {
+                                    speak("Unauthorized face detected. Identification failed.");
+                                    lastSpeechTime = Date.now();
+                                }
+                            }
+                        } else {
+                            faceStatus.innerText = "Searching...";
+                            if(Date.now() - lastSpeechTime > 5000) {
+                                speak("Scanning. Move closer to the light.");
+                                lastSpeechTime = Date.now();
+                            }
+                        }
+                    }, 1000);
+                });
+
+            } catch (err) {
+                speak("Hardware error. Refresh the page.");
+                alert("Hardware Error: " + err.message);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

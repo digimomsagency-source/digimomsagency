@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Admin Access | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- দ্রুত লোড হওয়ার জন্য আধুনিক AI লাইব্রেরি -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+</head>
+<body class="bg-slate-950 flex items-center justify-center min-h-screen p-4">
+
+    <div class="max-w-md w-full bg-slate-900 p-8 rounded-[3rem] border border-white/5 shadow-2xl text-center">
+        <h2 class="text-2xl font-black text-white uppercase tracking-tighter mb-8">Admin Gate</h2>
+
+        <!-- Password Login Section -->
+        <form id="passLoginForm" class="space-y-4 mb-6">
+            <input type="password" id="admPass" placeholder="Enter Admin Password" class="w-full p-4 bg-black border border-white/10 rounded-2xl outline-none focus:border-indigo-500 text-white text-center font-bold">
+            <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition">Login with Password</button>
+        </form>
+
+        <div class="relative flex py-5 items-center">
+            <div class="flex-grow border-t border-white/5"></div>
+            <span class="flex-shrink mx-4 text-slate-600 text-[10px] font-bold uppercase">OR</span>
+            <div class="flex-grow border-t border-white/5"></div>
+        </div>
+
+        <!-- Face Login Section -->
+        <div id="faceSection">
+            <div id="camArea" class="hidden mb-4 relative rounded-3xl overflow-hidden border-2 border-indigo-500/30 aspect-square">
+                <video id="video" width="100%" height="100%" autoplay muted class="object-cover"></video>
+                <div class="absolute bottom-0 w-full bg-indigo-600 text-[10px] text-white py-2 font-black uppercase tracking-widest" id="faceStatus">Initializing...</div>
+                <!-- স্ক্যানিং এনিমেশন লাইন -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.8)] animate-bounce"></div>
+            </div>
+            
+            <button onclick="startFaceLogin()" id="faceBtn" class="w-full bg-slate-800 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-emerald-600 transition border border-white/5 group">
+                <i class="fas fa-eye mr-2 group-hover:animate-pulse"></i> Unlock with Face ID
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const video = document.getElementById('video');
+        const faceStatus = document.getElementById('faceStatus');
+        const faceBtn = document.getElementById('faceBtn');
+
+        // ১. পাসওয়ার্ড লগইন
+        document.getElementById('passLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('admPass').value;
+            const { data } = await mySupabase.from('admin_config').select('admin_pass').single();
+            if(data.admin_pass === pass) {
+                sessionStorage.setItem('admin_verified', 'true');
+                window.location.href = 'admin.html';
+            } else { alert("Wrong Password!"); }
+        });
+
+        // ২. ফেস লগইন লজিক
+        async function startFaceLogin() {
+            faceBtn.disabled = true;
+            faceBtn.innerText = "Please Wait...";
+            document.getElementById('camArea').classList.remove('hidden');
+            faceStatus.innerText = "Loading AI Models...";
+
+            try {
+                // মডেল লোড করা
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+
+                faceStatus.innerText = "Starting Camera...";
+                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                video.srcObject = stream;
+
+                // কন্টিনিউয়াস স্ক্যানিং লুপ
+                video.addEventListener('play', () => {
+                    const scanInterval = setInterval(async () => {
+                        faceStatus.innerText = "Scanning Face...";
+                        
+                        const result = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+
+                        if (result) {
+                            faceStatus.innerText = "Verifying Identity...";
+                            
+                            // ডাটাবেস থেকে সেভ করা ফেস আনা
+                            const { data } = await mySupabase.from('admin_config').select('admin_face_data').single();
+                            
+                            if(!data || !data.admin_face_data) {
+                                alert("Error: No Master Face found! Use password.");
+                                clearInterval(scanInterval);
+                                location.reload();
+                                return;
+                            }
+
+                            const savedDescriptor = new Float32Array(JSON.parse(data.admin_face_data));
+                            const distance = faceapi.euclideanDistance(result.descriptor, savedDescriptor);
+
+                            // ০.৫ এর কম মানে মুখ মিলেছে
+                            if (distance < 0.5) {
+                                clearInterval(scanInterval);
+                                faceStatus.innerText = "Access Granted!";
+                                sessionStorage.setItem('admin_verified', 'true');
+                                setTimeout(() => { window.location.href = 'admin.html'; }, 500);
+                            } else {
+                                faceStatus.innerText = "Unknown Face Detected";
+                            }
+                        }
+                    }, 1000); // প্রতি ১ সেকেন্ড পর পর স্ক্যান করবে
+                });
+
+            } catch (err) {
+                alert("Error: " + err.message);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

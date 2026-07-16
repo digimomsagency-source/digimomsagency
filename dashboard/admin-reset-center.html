@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>System Maintenance | DigiMoms Admin</title>
+    <!-- অ্যাডমিন গার্ড যুক্ত করা হলো -->
+    <script src="admin-guard.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex items-center justify-center p-6">
+
+    <div class="max-w-2xl w-full bg-slate-900 p-10 rounded-[3rem] border border-white/5 shadow-2xl text-center">
+        <div class="w-20 h-20 bg-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-red-900/20">
+            <i class="fas fa-tools text-white text-3xl"></i>
+        </div>
+        <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">System Reset Center</h2>
+        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-10">Careful: These actions are permanent</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- বাটন ১: শুধু ইতিহাস পরিষ্কার করা -->
+            <div class="p-6 bg-slate-950 rounded-[2rem] border border-white/5 space-y-4">
+                <i class="fas fa-history text-indigo-500 text-2xl"></i>
+                <h3 class="text-xs font-black uppercase tracking-widest">Clear Business History</h3>
+                <p class="text-[9px] text-slate-500 leading-relaxed uppercase">মুছে যাবে: Leads, Payout Requests, Reports এবং সব Transactions. (কিন্তু কর্মীদের অ্যাকাউন্ট থাকবে)</p>
+                <button onclick="requestReset('history')" class="w-full bg-indigo-600 py-3 rounded-xl font-black uppercase text-[10px] hover:bg-indigo-500 transition">Clear History</button>
+            </div>
+
+            <!-- বাটন ২: সবকিছু পরিষ্কার করা (অ্যাডমিন ছাড়া) -->
+            <div class="p-6 bg-slate-950 rounded-[2rem] border border-white/5 space-y-4">
+                <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
+                <h3 class="text-xs font-black uppercase tracking-widest">Full Factory Reset</h3>
+                <p class="text-[9px] text-slate-500 leading-relaxed uppercase">মুছে যাবে: সব কর্মীর অ্যাকাউন্ট এবং তাদের ওয়ালেট ব্যালেন্স। (অ্যাডমিন পাসওয়ার্ড মুছবে না)</p>
+                <button onclick="requestReset('full')" class="w-full bg-red-700 py-3 rounded-xl font-black uppercase text-[10px] hover:bg-red-600 transition">Factory Reset</button>
+            </div>
+        </div>
+
+        <a href="admin.html" class="block mt-10 text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-white transition">Back to Dashboard</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const masterKey = "Swastika4945@"; // আপনার সিক্রেট পাসওয়ার্ড
+
+        async function requestReset(type) {
+            const pass = prompt("Enter Master Security Key to Confirm Action:");
+            
+            if (pass === masterKey) {
+                if(!confirm("Are you 100% sure? DATA CANNOT BE RECOVERED!")) return;
+                
+                try {
+                    if (type === 'history') {
+                        // ১. ইতিহাস মুছে ফেলা (Transactions, Leads, Requests, Reports)
+                        await mySupabase.from('transactions').delete().neq('id', 0);
+                        await mySupabase.from('payout_requests').delete().neq('id', 0);
+                        await mySupabase.from('reports').delete().neq('id', 0);
+                        await mySupabase.from('leads').delete().neq('id', 0);
+                        alert("HISTORY CLEARED: All logs have been deleted. Worker profiles remain active.");
+                    } 
+                    else if (type === 'full') {
+                        // ২. ফুল রিসেট (Profiles সহ সব মুছে ফেলা - Admin Config বাদে)
+                        await mySupabase.from('transactions').delete().neq('id', 0);
+                        await mySupabase.from('payout_requests').delete().neq('id', 0);
+                        await mySupabase.from('reports').delete().neq('id', 0);
+                        await mySupabase.from('leads').delete().neq('id', 0);
+                        await mySupabase.from('profiles').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                        alert("FACTORY RESET SUCCESSFUL: All worker data wiped. Admin security is intact.");
+                    }
+                    location.reload();
+                } catch (err) {
+                    alert("Error: " + err.message);
+                }
+            } else {
+                alert("Access Denied: Wrong Security Key!");
+            }
+        }
+    </script>
+</body>
+</html>

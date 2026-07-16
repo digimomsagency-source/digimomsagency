@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<script src="admin-guard.js"></script>
+
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker List | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+
+    <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+        <div>
+            <h2 class="text-3xl font-black uppercase italic tracking-tighter">Workforce Pool</h2>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Click a worker to manage/approve</p>
+        </div>
+        
+        <!-- সার্চ বার যোগ করা হয়েছে -->
+        <div class="relative w-full md:w-80">
+            <i class="fas fa-search absolute left-4 top-3.5 text-slate-500"></i>
+            <input type="text" id="workerSearch" onkeyup="filterWorkers()" placeholder="Search Name or Phone..." class="w-full bg-slate-900 border border-slate-800 pl-12 pr-4 py-3 rounded-2xl text-sm outline-none focus:border-indigo-500 transition shadow-xl">
+        </div>
+        
+        <button onclick="loadWorkers()" class="bg-slate-800 p-3 rounded-xl hover:bg-indigo-600 transition"><i class="fas fa-sync"></i></button>
+    </div>
+
+    <!-- Workers Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="worker-grid">
+        <p class="col-span-full text-center py-20 text-slate-600 font-bold uppercase animate-pulse">Loading Workers...</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let allWorkers = []; // গ্লোবাল ভ্যারিয়েবল সার্চের জন্য
+
+        async function loadWorkers() {
+            const grid = document.getElementById('worker-grid');
+            try {
+                const { data: workers, error } = await mySupabase.from('profiles').select('*').order('created_at', {ascending: false});
+                if (error) throw error;
+                allWorkers = workers;
+                renderWorkers(allWorkers);
+            } catch (err) {
+                grid.innerHTML = '<p class="text-red-500 font-bold text-center col-span-full uppercase">Error loading workers</p>';
+            }
+        }
+
+        function renderWorkers(workersList) {
+            const grid = document.getElementById('worker-grid');
+            if (!workersList || workersList.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20 bg-slate-900 rounded-[3rem] border border-slate-800"><p class="text-slate-500 font-bold uppercase text-xs tracking-widest">No Workers Found</p></div>';
+                return;
+            }
+
+            grid.innerHTML = "";
+            workersList.forEach(w => {
+                let statusCol = "text-amber-500";
+                let statusLabel = "PENDING";
+                if(w.is_approved && !w.is_suspended) { statusCol = "text-emerald-400"; statusLabel = "ACTIVE"; }
+                if(w.is_suspended) { statusCol = "text-red-500"; statusLabel = "SUSPENDED"; }
+
+                grid.innerHTML += `
+                <a href="admin-worker-details.html?id=${w.id}" class="bg-slate-900 p-8 rounded-[3rem] border border-slate-800 hover:border-indigo-500 transition-all group shadow-xl">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <img src="${w.govt_id_url || 'https://via.placeholder.com/150'}" class="w-16 h-16 rounded-2xl object-cover border-2 border-slate-800">
+                        <div>
+                            <h3 class="font-black text-white uppercase group-hover:text-indigo-400 transition">${w.full_name}</h3>
+                            <p class="text-[10px] text-slate-500 font-bold">${w.phone}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-end border-t border-slate-800 pt-6">
+                        <div>
+                            <p class="text-[8px] text-slate-600 font-black uppercase tracking-widest">Balance</p>
+                            <p class="text-xl font-black text-white">₹${(w.wallet_balance || 0).toFixed(2)}</p>
+                        </div>
+                        <p class="text-[8px] font-black uppercase ${statusCol}">${statusLabel}</p>
+                    </div>
+                </a>`;
+            });
+        }
+
+        function filterWorkers() {
+            const searchTerm = document.getElementById('workerSearch').value.toLowerCase();
+            const filtered = allWorkers.filter(w => 
+                w.full_name.toLowerCase().includes(searchTerm) || 
+                w.phone.includes(searchTerm)
+            );
+            renderWorkers(filtered);
+        }
+
+        window.onload = loadWorkers;
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Training Manager | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="text-3xl font-black uppercase italic tracking-tighter">Training Scheduler</h2>
+        <div class="flex gap-4">
+            <button onclick="toggleModal('addTrainingModal')" class="bg-indigo-600 px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-indigo-500 transition">Schedule New</button>
+        </div>
+    </div>
+
+    <!-- Active Trainings -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="training-list">
+        <p class="col-span-full text-center py-20 opacity-30 font-bold uppercase">Loading Schedules...</p>
+    </div>
+
+    <!-- History Section -->
+    <div class="mt-16 bg-slate-900 rounded-[2.5rem] border border-slate-800 overflow-hidden">
+        <div class="p-6 bg-slate-800/50 border-b border-slate-800 font-black text-xs uppercase tracking-widest text-indigo-400">Past Training Sessions (History)</div>
+        <div id="training-history" class="p-6 space-y-4"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="addTrainingModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 w-full max-w-lg rounded-[3rem] border border-slate-800 p-8">
+            <h3 class="text-xl font-black uppercase mb-6">Schedule Session</h3>
+            <form id="trainingForm" class="space-y-4 text-black">
+                <input type="text" id="tTitle" placeholder="Session Title" class="w-full p-4 rounded-xl font-bold outline-none" required>
+                <input type="text" id="tLink" placeholder="Google Meet Link" class="w-full p-4 rounded-xl outline-none" required>
+                <input type="datetime-local" id="tTime" class="w-full p-4 rounded-xl font-bold outline-none" required>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl uppercase">Post Schedule</button>
+                <button type="button" onclick="toggleModal('addTrainingModal')" class="w-full text-slate-500 font-bold py-2 uppercase text-[10px]">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function load() {
+            const { data } = await mySupabase.from('trainings').select('*').order('scheduled_at', {ascending: false});
+            const list = document.getElementById('training-list');
+            const history = document.getElementById('training-history');
+            
+            list.innerHTML = ""; history.innerHTML = "";
+
+            if(data) data.forEach(t => {
+                const card = `
+                <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-slate-800 shadow-2xl relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${t.status === 'live' ? 'bg-red-600 animate-pulse' : 'bg-indigo-900 text-indigo-300'}">${t.status}</span>
+                        <p class="text-[10px] font-bold text-slate-500">${new Date(t.scheduled_at).toLocaleString()}</p>
+                    </div>
+                    <h3 class="text-xl font-black mb-6">${t.title}</h3>
+                    <div class="flex gap-2">
+                        ${t.status === 'scheduled' ? `<button onclick="updateStatus(${t.id}, 'live')" class="bg-emerald-600 flex-1 py-3 rounded-xl font-black text-[10px] uppercase">Start Meet</button>` : ''}
+                        ${t.status === 'live' ? `<button onclick="updateStatus(${t.id}, 'completed')" class="bg-slate-700 flex-1 py-3 rounded-xl font-black text-[10px] uppercase">Mark Complete</button>` : ''}
+                        ${t.status !== 'completed' ? `<a href="${t.meet_link}" target="_blank" class="bg-white text-black px-4 py-3 rounded-xl"><i class="fas fa-video"></i></a>` : ''}
+                    </div>
+                </div>`;
+
+                if(t.status === 'completed') {
+                    history.innerHTML += `<div class="flex justify-between items-center bg-slate-950 p-4 rounded-2xl border border-slate-800"><p class="text-sm font-bold text-slate-400">${t.title}</p><span class="text-[10px] text-slate-600">${new Date(t.scheduled_at).toLocaleDateString()}</span></div>`;
+                } else {
+                    list.innerHTML += card;
+                }
+            });
+        }
+
+        async function updateStatus(id, s) {
+            await mySupabase.from('trainings').update({ status: s }).eq('id', id);
+            load();
+        }
+
+        document.getElementById('trainingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = { title: document.getElementById('tTitle').value, meet_link: document.getElementById('tLink').value, scheduled_at: document.getElementById('tTime').value };
+            await mySupabase.from('trainings').insert([payload]);
+            alert("Scheduled!"); location.reload();
+        });
+
+        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+        window.onload = load;
+    </script>
+</body>
+</html>

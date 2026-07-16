@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl p-10">
+        
+        <div class="text-center mb-10">
+            <div class="bg-indigo-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-200">
+                <i class="fas fa-lock text-white text-2xl"></i>
+            </div>
+            <h1 class="text-3xl font-black text-slate-800 uppercase tracking-tight">Worker Login</h1>
+            <p class="text-slate-400 text-xs font-bold mt-1 uppercase tracking-widest">Welcome back! / পুনরায় স্বাগতম</p>
+        </div>
+
+        <form class="space-y-6" id="login-form">
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">WhatsApp Number</label>
+                <input type="tel" id="phone" required placeholder="Enter Registered Number" class="w-full px-6 py-4 rounded-2xl border border-slate-100 focus:ring-2 focus:ring-indigo-600 outline-none transition bg-slate-50 font-bold">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Password</label>
+                <input type="password" id="password" required placeholder="Enter Password" class="w-full px-6 py-4 rounded-2xl border border-slate-100 focus:ring-2 focus:ring-indigo-600 outline-none transition bg-slate-50 font-bold">
+            </div>
+
+            <div class="text-right">
+                <a href="#" class="text-[10px] font-bold text-indigo-600 uppercase hover:underline">Forgot Password?</a>
+            </div>
+
+            <!-- এখানে আমি onclick সরিয়ে দিয়েছি যাতে ভুল লগইন না হয় -->
+            <button type="submit" id="login-btn" class="w-full bg-slate-900 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 uppercase tracking-widest text-sm">
+                Login / লগইন
+            </button>
+
+            <p class="text-center text-[10px] font-black text-slate-400 uppercase mt-8">
+                New to DigiMoms? / নতুন শুরু করছেন? 
+                <a href="register.html" class="text-indigo-600 hover:underline">Create Account</a>
+            </p>
+        </form>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+    const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+    const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const loginForm = document.getElementById('login-form');
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); 
+
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('login-btn');
+
+        loginBtn.innerText = "Checking... / যাচাই হচ্ছে...";
+        loginBtn.disabled = true;
+
+        try {
+            // ১. সুপাবেসে লগইন চেক করা
+            const { data, error } = await mySupabase.auth.signInWithPassword({
+                email: phone + '@digimoms.com',
+                password: password
+            });
+
+            if (error) throw error;
+
+            // ২. ইউজারের প্রোফাইল চেক করা (অ্যাপ্রুভ কি না)
+            const { data: profile, error: profileError } = await mySupabase
+                .from('profiles')
+                .select('is_approved, is_suspended')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profile.is_suspended) {
+                alert("Your ID is suspended!");
+                await mySupabase.auth.signOut();
+                location.reload();
+                return;
+            }
+
+            if (!profile.is_approved) {
+                alert("Account Pending Approval! / অ্যাডমিন এখনো অনুমতি দেয়নি।");
+                await mySupabase.auth.signOut();
+                location.reload();
+                return;
+            }
+
+            // ৩. সব ঠিক থাকলে ড্যাশবোর্ডে পাঠানো
+            alert("Login Successful!");
+            window.location.href = 'index.html';
+
+        } catch (error) {
+            alert('Login Failed: ' + error.message);
+            loginBtn.innerText = "Login / লগইন";
+            loginBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

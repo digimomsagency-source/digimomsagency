@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Worker Profile | DigiMoms Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <a href="admin-workers.html" class="inline-flex items-center space-x-2 text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-8 hover:text-white transition">
+            <i class="fas fa-chevron-left"></i> <span>Back to workforce list</span>
+        </a>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- LEFT: Profile & KYC -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-slate-900 p-8 rounded-[3rem] border border-slate-800 text-center relative overflow-hidden">
+                    <div id="status-badge" class="absolute top-6 right-6 font-black text-[9px] px-3 py-1 rounded-full uppercase"></div>
+                    <img id="kyc-photo" src="" class="w-32 h-32 rounded-[2rem] mx-auto object-cover border-4 border-slate-800 shadow-2xl mb-4">
+                    <h2 id="w-name" class="text-2xl font-black uppercase tracking-tighter">--</h2>
+                    <p id="w-phone" class="text-slate-500 font-bold text-sm">--</p>
+                    <div id="action-area" class="mt-8 pt-8 border-t border-slate-800 flex flex-col gap-3"></div>
+                    <a id="view-kyc-link" target="_blank" class="mt-4 block bg-slate-800 text-slate-400 py-3 rounded-2xl font-black text-[10px] uppercase hover:bg-white hover:text-black transition">View Original ID Document</a>
+                </div>
+
+                <!-- Bank Info -->
+                <div class="bg-slate-900 p-8 rounded-[3rem] border border-slate-800">
+                    <h3 class="text-xs font-black text-indigo-400 uppercase mb-6 tracking-widest italic">Banking Information</h3>
+                    <div class="space-y-4 text-sm font-bold">
+                        <div class="flex justify-between border-b border-slate-800 pb-2"><span class="text-slate-500">Bank:</span> <span id="b-name">--</span></div>
+                        <div class="flex justify-between border-b border-slate-800 pb-2"><span class="text-slate-500">A/C:</span> <span id="b-ac">--</span></div>
+                        <div class="flex justify-between border-b border-slate-800 pb-2"><span class="text-slate-500">IFSC:</span> <span id="b-ifsc">--</span></div>
+                        <div class="flex justify-between text-indigo-400"><span class="text-slate-500 uppercase tracking-tighter">UPI ID:</span> <span id="b-upi">--</span></div>
+                    </div>
+                    <div id="qr-area" class="mt-8 bg-white p-4 rounded-3xl hidden flex flex-col items-center shadow-2xl">
+                        <p class="text-black text-[9px] font-black mb-1 italic">SCAN TO PAY INSTANTLY</p>
+                        <p id="qr-amount-display" class="text-indigo-600 text-xs font-black mb-3">Amount: ₹0.00</p>
+                        <img id="upi-qr" src="" class="w-40 h-40">
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Stats & Payout -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Time Filters -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="bg-indigo-900/20 p-5 rounded-3xl border border-indigo-500/20 text-center"><p class="text-[8px] font-black text-slate-500 uppercase">Lifetime</p><h4 id="inc-life" class="text-lg font-black tracking-tighter">₹0</h4></div>
+                    <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 text-center"><p class="text-[8px] font-black text-slate-500 uppercase">This Year</p><h4 id="inc-year" class="text-lg font-black tracking-tighter">₹0</h4></div>
+                    <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 text-center"><p class="text-[8px] font-black text-slate-500 uppercase">This Month</p><h4 id="inc-month" class="text-lg font-black tracking-tighter">₹0</h4></div>
+                    <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 text-center"><p class="text-[8px] font-black text-slate-500 uppercase">This Week</p><h4 id="inc-week" class="text-lg font-black tracking-tighter">₹0</h4></div>
+                    <div class="bg-slate-900 p-5 rounded-3xl border border-slate-800 text-center ring-1 ring-emerald-500/30"><p class="text-[8px] font-black text-emerald-500 uppercase">Today</p><h4 id="inc-today" class="text-lg font-black text-emerald-400 tracking-tighter">₹0</h4></div>
+                </div>
+
+                <!-- PAYOUT SECTION -->
+                <div class="bg-slate-900 p-10 rounded-[3rem] border border-slate-800">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-xl font-black uppercase tracking-tighter italic">Payout Console</h3>
+                        <div class="text-right"><p class="text-[9px] font-black text-slate-500 uppercase">Worker Balance</p><p id="cur-wallet" class="text-3xl font-black text-white">₹0.00</p></div>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-4 bg-slate-950 p-6 rounded-[2rem]">
+                        <input type="number" id="payAmt" onkeyup="updatePayoutQR()" placeholder="Enter amount paid" class="flex-1 bg-slate-900 p-4 rounded-xl border border-slate-800 outline-none text-xl font-black focus:border-indigo-500 transition text-white">
+                        <button onclick="processPayout()" class="bg-indigo-600 hover:bg-emerald-600 px-10 py-4 rounded-xl font-black text-xs uppercase shadow-xl transition-all">Submit Payout</button>
+                    </div>
+                </div>
+
+                <!-- Transaction History Table (New Addition based on requirements) -->
+                <div class="bg-slate-900 rounded-[2.5rem] border border-slate-800 overflow-hidden">
+                    <div class="p-6 bg-slate-800/30 border-b border-slate-800 flex justify-between items-center">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest">Full Transaction Log</h4>
+                        <span class="text-[8px] px-2 py-1 bg-indigo-500/10 text-indigo-400 rounded-full font-bold uppercase">Real-time</span>
+                    </div>
+                    <div id="trans-log" class="p-4 space-y-2 overflow-y-auto max-h-[500px]">
+                        <p class="text-center py-10 opacity-30 font-bold uppercase text-xs">Loading Log History...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const pid = urlParams.get('id');
+        let workerData = null;
+
+        async function init() {
+            const { data: w } = await mySupabase.from('profiles').select('*').eq('id', pid).single();
+            if(!w) return;
+            workerData = w;
+
+            document.getElementById('kyc-photo').src = w.govt_id_url || 'https://via.placeholder.com/150';
+            document.getElementById('view-kyc-link').href = w.govt_id_url;
+            document.getElementById('w-name').innerText = w.full_name;
+            document.getElementById('w-phone').innerText = w.phone;
+            document.getElementById('cur-wallet').innerText = '₹' + (w.wallet_balance || 0).toFixed(2);
+            
+            document.getElementById('b-name').innerText = w.bank_name || 'Not Added';
+            document.getElementById('b-ac').innerText = w.account_no || 'Not Added';
+            document.getElementById('b-ifsc').innerText = w.ifsc_code || 'Not Added';
+            document.getElementById('b-upi').innerText = w.upi_id || 'Not Added';
+
+            updatePayoutQR();
+
+            const badge = document.getElementById('status-badge');
+            const actionArea = document.getElementById('action-area');
+            if (w.is_suspended) {
+                badge.innerText = 'Suspended'; badge.className = 'absolute top-6 right-6 font-black text-[9px] px-3 py-1 rounded-full uppercase bg-red-600 text-white';
+                actionArea.innerHTML = `<button onclick="updateStatus('active')" class="bg-emerald-600 py-4 rounded-2xl font-black text-xs uppercase hover:bg-emerald-500 transition shadow-xl">ACTIVATE ACCOUNT</button>`;
+            } else if (!w.is_approved) {
+                badge.innerText = 'Pending'; badge.className = 'absolute top-6 right-6 font-black text-[9px] px-3 py-1 rounded-full uppercase bg-amber-500 text-black';
+                actionArea.innerHTML = `<button onclick="updateStatus('approve')" class="bg-indigo-600 py-4 rounded-2xl font-black text-xs uppercase hover:bg-indigo-500 transition shadow-xl">APPROVE WORKER</button>`;
+            } else {
+                badge.innerText = 'Active'; badge.className = 'absolute top-6 right-6 font-black text-[9px] px-3 py-1 rounded-full uppercase bg-emerald-500 text-black';
+                actionArea.innerHTML = `<button onclick="updateStatus('suspend')" class="bg-red-600/10 text-red-500 border border-red-500/20 py-4 rounded-2xl font-black text-xs uppercase hover:bg-red-600 hover:text-white transition">SUSPEND ACCOUNT</button>`;
+            }
+
+            calculateIncome(pid);
+            loadTransactions(pid);
+        }
+
+        function updatePayoutQR() {
+            if(!workerData || !workerData.upi_id) return;
+            const amount = document.getElementById('payAmt').value || 0;
+            document.getElementById('qr-area').classList.remove('hidden');
+            document.getElementById('qr-amount-display').innerText = `Amount: ₹${parseFloat(amount).toFixed(2)}`;
+            const upiUri = `upi://pay?pa=${workerData.upi_id}&pn=${encodeURIComponent(workerData.full_name)}&am=${amount}&cu=INR`;
+            document.getElementById('upi-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
+        }
+
+        async function updateStatus(type) {
+            let data = {};
+            if(type === 'approve') data = { is_approved: true, is_suspended: false };
+            if(type === 'suspend') data = { is_suspended: true };
+            if(type === 'active') data = { is_suspended: false, is_approved: true };
+            await mySupabase.from('profiles').update(data).eq('id', pid);
+            location.reload();
+        }
+
+        async function calculateIncome(uid) {
+            const { data: trans } = await mySupabase.from('transactions').select('*').eq('worker_id', uid);
+            let life=0, year=0, month=0, week=0, today=0;
+            
+            const now = new Date();
+            const startOfToday = new Date().setHours(0,0,0,0);
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).setHours(0,0,0,0);
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
+
+            if(trans) {
+                trans.forEach(t => {
+                    const amt = parseFloat(t.amount);
+                    if(amt > 0) { // শুধুমাত্র পজিটিভ ইনকাম হিসেব করবে
+                        const tTime = new Date(t.created_at).getTime();
+                        life += amt;
+                        if(tTime >= startOfYear) year += amt;
+                        if(tTime >= startOfMonth) month += amt;
+                        if(tTime >= startOfWeek) week += amt;
+                        if(tTime >= startOfToday) today += amt;
+                    }
+                });
+            }
+
+            document.getElementById('inc-life').innerText = '₹' + life.toFixed(0);
+            document.getElementById('inc-year').innerText = '₹' + year.toFixed(0);
+            document.getElementById('inc-month').innerText = '₹' + month.toFixed(0);
+            document.getElementById('inc-week').innerText = '₹' + week.toFixed(0);
+            document.getElementById('inc-today').innerText = '₹' + today.toFixed(0);
+        }
+
+        async function loadTransactions(uid) {
+            const { data, error } = await mySupabase.from('transactions').select('*').eq('worker_id', uid).order('created_at', {ascending:false});
+            const div = document.getElementById('trans-log');
+            if(data && data.length > 0) {
+                div.innerHTML = "";
+                data.forEach(t => {
+                    const isInc = parseFloat(t.amount) > 0;
+                    div.innerHTML += `
+                    <div class="flex justify-between items-center p-4 bg-slate-950 rounded-2xl border border-slate-800 text-[10px] shadow-inner mb-2 transition hover:bg-slate-900">
+                        <div>
+                            <p class="font-black text-slate-200 uppercase tracking-widest">${t.description || 'System Record'}</p>
+                            <p class="text-slate-500 font-bold mt-1">${new Date(t.created_at).toLocaleString('en-IN')}</p>
+                        </div>
+                        <p class="font-black ${isInc ? 'text-emerald-400' : 'text-red-500'} text-xs">
+                            ${isInc ? '+' : '-'}₹${Math.abs(t.amount).toFixed(2)}
+                        </p>
+                    </div>`;
+                });
+            } else {
+                div.innerHTML = '<p class="text-center py-10 text-slate-600 text-[10px] font-black uppercase tracking-widest">No transaction history found</p>';
+            }
+        }
+
+        async function processPayout() {
+            const amt = parseFloat(document.getElementById('payAmt').value);
+            if(!amt || amt <= 0) return alert("Enter amount!");
+            if(!confirm("Are you sure? This will deduct wallet balance.")) return;
+            const { error } = await mySupabase.rpc('decrement_wallet', { row_id: pid, amount_to_cut: amt });
+            if(!error) {
+                await mySupabase.from('transactions').insert([{ worker_id: pid, amount: -amt, type: 'payout', description: 'Payout via Paytm/UPI' }]);
+                alert("Success!"); location.reload();
+            } else { alert(error.message); }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

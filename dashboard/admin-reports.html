@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Support Control | DigiMoms Admin</title>
+    <script src="admin-guard.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-4 md:p-10">
+
+    <div class="max-w-6xl mx-auto space-y-10">
+        
+        <!-- ১. নতুন অভিযোগ যোগ করার ফর্ম (WhatsApp-এ অভিযোগ পেলে ব্যবহারের জন্য) -->
+        <div class="bg-slate-900 p-8 rounded-[3rem] border border-white/5 shadow-2xl">
+            <h3 class="text-xl font-black uppercase text-indigo-400 mb-6 flex items-center gap-3">
+                <i class="fab fa-whatsapp"></i> Register External Complaint
+            </h3>
+            <form id="adminReportForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="tel" id="userPhone" placeholder="Worker Phone Number" class="p-4 bg-black border border-white/10 rounded-2xl outline-none focus:border-indigo-500 font-bold" required>
+                <input type="text" id="repSub" placeholder="Issue Subject" class="p-4 bg-black border border-white/10 rounded-2xl outline-none focus:border-indigo-500 font-bold" required>
+                <textarea id="repMsg" placeholder="Message Details..." class="md:col-span-2 p-4 bg-black border border-white/10 rounded-2xl outline-none focus:border-indigo-500 h-24 font-medium" required></textarea>
+                <button type="submit" class="md:col-span-2 bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-indigo-500 transition">Add To Worker Dashboard</button>
+            </form>
+        </div>
+
+        <!-- ২. অভিযোগের তালিকা ও উত্তর দেওয়ার জায়গা -->
+        <div class="bg-slate-900 rounded-[3rem] border border-white/5 overflow-hidden">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-indigo-900/10">
+                <h3 class="font-black uppercase text-sm tracking-[0.2em]">Live Support Tickets</h3>
+                <button onclick="load()" class="text-[10px] font-black uppercase text-indigo-400 bg-white/5 px-3 py-1 rounded-full"><i class="fas fa-sync mr-1"></i> Refresh</button>
+            </div>
+            <div id="ticket-list" class="p-8 space-y-6">
+                <!-- Tickets will load here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function load() {
+            const { data: list } = await mySupabase.from('reports').select('*, profiles(full_name, phone)').order('created_at', {ascending:false});
+            const div = document.getElementById('ticket-list');
+            div.innerHTML = "";
+            
+            if(list) list.forEach(t => {
+                const isResolved = t.status === 'resolved';
+                div.innerHTML += `
+                <div class="p-6 bg-black/40 rounded-[2.5rem] border ${isResolved ? 'border-emerald-500/20' : 'border-indigo-500/20'} shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-[10px] font-black uppercase">Ticket</span>
+                            <div><p class="text-xs font-black uppercase text-white">${t.profiles?.full_name || 'System'}</p><p class="text-[8px] font-bold text-slate-500 uppercase">${t.profiles?.phone || ''} | ${new Date(t.created_at).toLocaleString()}</p></div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase border border-current ${isResolved ? 'text-emerald-500' : 'text-amber-500'}">${t.status}</span>
+                    </div>
+                    <h4 class="font-bold text-indigo-400 text-sm mb-2 uppercase">${t.subject}</h4>
+                    <p class="text-xs text-slate-400 mb-6 font-medium leading-relaxed">${t.message}</p>
+                    
+                    <div class="flex gap-2">
+                        <input id="reply-${t.id}" type="text" placeholder="Type final solution..." class="flex-1 p-3 bg-black border border-white/5 rounded-xl text-xs font-bold outline-none focus:border-indigo-500" value="${t.admin_reply || ''}">
+                        <button onclick="sendReply(${t.id})" class="bg-indigo-600 px-6 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-600 transition">Update Status</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function sendReply(id) {
+            const msg = document.getElementById('reply-'+id).value;
+            await mySupabase.from('reports').update({ admin_reply: msg, status: 'resolved' }).eq('id', id);
+            alert("Status Updated to Resolved!"); load();
+        }
+
+        // অ্যাডমিন কর্তৃক নতুন টিকেট রেজিস্টার করা (WhatsApp-এ পাওয়া কমপ্লেইন)
+        document.getElementById('adminReportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const ph = document.getElementById('userPhone').value;
+            const sub = document.getElementById('repSub').value;
+            const msg = document.getElementById('repMsg').value;
+
+            // ১. ফোন নম্বর দিয়ে কর্মী খোঁজা
+            const { data: prof } = await mySupabase.from('profiles').select('id').eq('phone', ph).single();
+            if(!prof) return alert("Worker not found with this phone number!");
+
+            // ২. টিকেট অ্যাড করা
+            const { error } = await mySupabase.from('reports').insert([{ user_id: prof.id, subject: sub, message: msg, status: 'open' }]);
+            if(!error) { alert("Ticket Added to Worker Dashboard!"); e.target.reset(); load(); }
+        });
+
+        window.onload = load;
+    </script>
+</body>
+</html>

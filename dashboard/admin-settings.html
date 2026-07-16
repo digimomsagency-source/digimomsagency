@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Security Vault | DigiMoms Admin</title>
+    <script>
+        // বেসিক অ্যাডমিন সেশন চেক
+        if (sessionStorage.getItem('admin_verified') !== 'true') { window.location.href = 'admin-login.html'; }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-4 md:p-10">
+
+    <!-- সিকিউরিটি গেট (এটি সবার আগে দেখাবে) -->
+    <div id="securityGate" class="fixed inset-0 bg-slate-950 z-[200] flex items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-md w-full bg-slate-900 p-10 rounded-[3rem] border border-white/10 shadow-2xl text-center">
+            <div class="w-20 h-20 bg-red-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-red-900/20 animate-pulse">
+                <i class="fas fa-user-lock text-white text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter mb-2">Vault Access Required</h2>
+            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-8">Verify identity to change security settings</p>
+
+            <div class="space-y-4">
+                <!-- অপশন ১: ফেস আইডি -->
+                <button id="gateFaceBtn" onclick="verifyGateFace()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-indigo-500 transition">
+                    <i class="fas fa-eye mr-2"></i> Verify with Face ID
+                </button>
+                
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-white/5"></div>
+                    <span class="flex-shrink mx-4 text-slate-700 text-[8px] font-black uppercase">OR USE PASSKEY</span>
+                    <div class="flex-grow border-t border-white/5"></div>
+                </div>
+
+                <!-- অপশন ২: সিক্রেট পাসওয়ার্ড -->
+                <input type="password" id="gatePass" placeholder="Master Security Key" class="w-full p-4 bg-black border border-white/10 rounded-2xl outline-none focus:border-red-500 text-white text-center font-bold text-sm">
+                <button onclick="verifyGatePass()" class="w-full bg-slate-800 text-slate-300 py-3 rounded-2xl font-black uppercase text-[9px] tracking-widest border border-white/5 hover:bg-white hover:text-black transition">Confirm Key</button>
+            </div>
+
+            <!-- ক্যামেরা এরিয়া (গেটের জন্য) -->
+            <div id="gateCamArea" class="hidden mt-6 rounded-[2rem] overflow-hidden border-2 border-indigo-500/30 aspect-square relative">
+                <video id="gateVideo" width="100%" height="100%" autoplay muted class="object-cover"></video>
+                <div id="gateStatus" class="absolute bottom-0 w-full bg-indigo-600 py-2 text-[9px] font-black uppercase">Analyzing...</div>
+            </div>
+            
+            <a href="admin.html" class="block mt-8 text-[9px] font-black text-slate-600 uppercase tracking-widest hover:text-white transition">Cancel & Go Back</a>
+        </div>
+    </div>
+
+    <!-- মেইন সেটিংস কন্টেন্ট (এটি শুরুতে লুকানো থাকবে) -->
+    <div id="mainSettings" class="hidden max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+            <h2 class="text-3xl font-black uppercase italic text-indigo-500">Security Vault</h2>
+            <a href="admin.html" class="bg-slate-800 px-6 py-2 rounded-xl text-[10px] font-black uppercase border border-white/10 hover:bg-white hover:text-black transition">Dashboard</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <!-- পাসওয়ার্ড আপডেট -->
+            <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-white/5 shadow-2xl">
+                <h3 class="font-black uppercase text-xs mb-6 text-slate-500 tracking-widest">Update Master Password</h3>
+                <input type="password" id="newAdmPass" placeholder="Enter New Password" class="w-full p-4 bg-black border border-white/10 rounded-2xl mb-6 text-white font-bold outline-none focus:border-indigo-500 text-center">
+                <button onclick="updateAdminPass()" class="w-full bg-indigo-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-indigo-700 transition">Save Password</button>
+            </div>
+
+            <!-- ফেস আইডি আপডেট -->
+            <div class="bg-slate-900 p-8 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden">
+                <h3 class="font-black uppercase text-xs mb-6 text-slate-500 tracking-widest">Register New Face ID</h3>
+                <div id="setupCamArea" class="hidden mb-6 rounded-[2rem] overflow-hidden border-2 border-indigo-500/30 aspect-square bg-black flex items-center justify-center">
+                    <video id="setupVideo" width="100%" height="100%" autoplay muted class="object-cover"></video>
+                </div>
+                <div id="ai-loading" class="hidden py-4 text-center">
+                    <i class="fas fa-cog fa-spin text-indigo-500 text-2xl mb-2"></i>
+                    <p class="text-[10px] font-bold uppercase text-slate-500">Starting AI...</p>
+                </div>
+                <button id="setupCamBtn" onclick="openSetupCam()" class="w-full bg-slate-800 py-4 rounded-2xl font-black uppercase text-[10px] border border-white/5 hover:bg-white hover:text-black transition">Setup My Face</button>
+                <button id="saveFaceBtn" onclick="captureAndSaveFace()" class="hidden w-full bg-emerald-600 py-4 rounded-2xl font-black uppercase text-[10px]">Capture & Verify</button>
+                <p id="setupStatus" class="text-[9px] mt-4 text-indigo-400 text-center uppercase font-bold tracking-tighter"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const secretPasskey = "Swastika4945@"; // আপনার দেওয়া সিক্রেট কি
+
+        // ১. সিক্রেট পাসওয়ার্ড দিয়ে গেট খোলা
+        function verifyGatePass() {
+            const input = document.getElementById('gatePass').value;
+            if(input === secretPasskey) {
+                unlockVault();
+            } else { alert("Wrong Passkey! Access Denied."); }
+        }
+
+        // ২. ফেস দিয়ে গেট খোলা (একই ফেস আইডি যা আগে সেট করা ছিল)
+        async function verifyGateFace() {
+            const btn = document.getElementById('gateFaceBtn');
+            const status = document.getElementById('gateStatus');
+            btn.innerText = "Loading Models...";
+
+            try {
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+
+                document.getElementById('gateCamArea').classList.remove('hidden');
+                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                const video = document.getElementById('gateVideo');
+                video.srcObject = stream;
+
+                const interval = setInterval(async () => {
+                    status.innerText = "Scanning Master Face...";
+                    const result = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+
+                    if (result) {
+                        const { data } = await mySupabase.from('admin_config').select('admin_face_data').single();
+                        if(!data.admin_face_data) {
+                            alert("No Master Face found in DB. Use Passkey.");
+                            clearInterval(interval); stream.getTracks().forEach(t => t.stop());
+                            return;
+                        }
+                        const savedDescriptor = new Float32Array(JSON.parse(data.admin_face_data));
+                        const distance = faceapi.euclideanDistance(result.descriptor, savedDescriptor);
+
+                        if (distance < 0.5) {
+                            clearInterval(interval);
+                            stream.getTracks().forEach(t => t.stop());
+                            unlockVault();
+                        }
+                    }
+                }, 1000);
+            } catch (err) { alert(err.message); }
+        }
+
+        function unlockVault() {
+            document.getElementById('securityGate').classList.add('hidden');
+            document.getElementById('mainSettings').classList.remove('hidden');
+            alert("Identity Verified. Vault Unlocked.");
+        }
+
+        // --- মেইন সেটিংস লজিক ---
+        async function updateAdminPass() {
+            const p = document.getElementById('newAdmPass').value;
+            if(!p || p.length < 4) return alert("Enter valid password!");
+            const { error } = await mySupabase.from('admin_config').update({ admin_pass: p }).eq('id', 1);
+            if(!error) alert("Admin Password Updated!");
+        }
+
+        let modelsLoaded = false;
+        async function openSetupCam() {
+            const loading = document.getElementById('ai-loading');
+            document.getElementById('setupCamBtn').classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            if (!modelsLoaded) {
+                const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+                modelsLoaded = true;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            document.getElementById('setupVideo').srcObject = stream;
+            loading.classList.add('hidden');
+            document.getElementById('setupCamArea').classList.remove('hidden');
+            document.getElementById('saveFaceBtn').classList.remove('hidden');
+        }
+
+        async function captureAndSaveFace() {
+            const video = document.getElementById('setupVideo');
+            const result = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+            if (result) {
+                const faceData = JSON.stringify(Array.from(result.descriptor));
+                await mySupabase.from('admin_config').update({ admin_face_data: faceData }).eq('id', 1);
+                alert("Master Face ID Updated!");
+                location.reload();
+            } else { alert("Face not detected!"); }
+        }
+    </script>
+</body>
+</html>

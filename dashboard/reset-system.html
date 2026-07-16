@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Reset System | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-red-50 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-10 rounded-[3rem] shadow-2xl text-center max-w-md border-4 border-red-200">
+        <h1 class="text-3xl font-black text-red-600 uppercase mb-4 tracking-tighter">Danger Zone</h1>
+        <p class="text-slate-500 font-bold text-sm mb-8">এটি ব্যবহার করলে আপনার সব কাস্টমার লিড, ইনকাম হিস্ট্রি এবং কর্মীদের প্রোফাইল ডাটা চিরতরে মুছে যাবে।</p>
+        <button id="resetBtn" class="w-full bg-red-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-red-700 transition uppercase tracking-widest">Delete All Business Data</button>
+        <p id="msg" class="mt-4 font-bold text-xs uppercase text-emerald-600"></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('resetBtn').addEventListener('click', async () => {
+            if(!confirm("Are you 100% sure? This cannot be undone!")) return;
+            document.getElementById('resetBtn').innerText = "Cleaning...";
+
+            // টেবিলগুলো খালি করা (Auth অ্যাকাউন্ট মুছবে না, শুধু বিজনেস ডাটা মুছবে)
+            await mySupabase.from('transactions').delete().neq('id', 0);
+            await mySupabase.from('leads').delete().neq('id', 0);
+            await mySupabase.from('reports').delete().neq('id', 0);
+            await mySupabase.from('profiles').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+            document.getElementById('msg').innerText = "System Reset Successful! You can now start fresh.";
+            document.getElementById('resetBtn').innerText = "SYSTEM CLEANED";
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="admin-guard.js"></script>
+    <meta charset="UTF-8"><title>Recovery Master | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+    
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="text-2xl font-black uppercase tracking-tighter italic text-indigo-400">Account Recovery Database</h2>
+        <div class="relative"><i class="fas fa-search absolute left-4 top-3 text-slate-500"></i>
+        <input type="text" id="search" onkeyup="filter()" placeholder="Search Phone/Key..." class="bg-slate-900 border border-slate-800 pl-10 pr-4 py-2 rounded-xl text-xs outline-none focus:border-indigo-500 w-64 shadow-xl"></div>
+    </div>
+
+    <div class="overflow-x-auto bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl">
+        <table class="w-full text-left text-[10px] font-black uppercase tracking-widest" id="keyTable">
+            <thead class="bg-slate-800 text-indigo-300 border-b border-slate-700">
+                <tr>
+                    <th class="p-6">Worker Name</th>
+                    <th class="p-6">WhatsApp Number</th>
+                    <th class="p-6 text-emerald-400">Master Recovery Key</th>
+                    <th class="p-6">Status</th>
+                </tr>
+            </thead>
+            <tbody id="rows" class="text-slate-400">
+                <!-- Data loads here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function load() {
+            const { data, error } = await mySupabase.from('profiles').select('full_name, phone, recovery_key, is_approved').order('created_at', {ascending:false});
+            const tbody = document.getElementById('rows');
+            tbody.innerHTML = "";
+            if(data) data.forEach(w => {
+                tbody.innerHTML += `
+                <tr class="border-b border-slate-800 hover:bg-white/5 transition">
+                    <td class="p-6 text-white text-sm">${w.full_name}</td>
+                    <td class="p-6 font-bold text-indigo-400">${w.phone}</td>
+                    <td class="p-6"><span class="bg-slate-800 px-4 py-2 rounded-xl border border-indigo-500/30 text-emerald-400 font-mono text-xs">${w.recovery_key || 'NOT GENERATED'}</span></td>
+                    <td class="p-6"><span class="text-[8px] font-black ${w.is_approved ? 'text-indigo-500' : 'text-amber-500'}">${w.is_approved ? 'APPROVED' : 'PENDING'}</span></td>
+                </tr>`;
+            });
+        }
+
+        function filter() {
+            let input = document.getElementById("search").value.toUpperCase();
+            let tr = document.getElementById("keyTable").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                tr[i].style.display = tr[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+
+        window.onload = load;
+    </script>
+</body>
+</html>

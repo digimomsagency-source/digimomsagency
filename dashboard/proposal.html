@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal Center | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 font-sans text-slate-100">
+    <nav class="bg-black/40 p-4 border-b border-white/5 flex justify-between sticky top-0 z-50 backdrop-blur-md">
+        <div class="flex items-center space-x-4"><a href="index.html" class="bg-white/10 p-2 rounded-xl"><i class="fas fa-arrow-left"></i></a><h1 class="font-black uppercase tracking-widest text-xs text-indigo-400">Proposal Operations</h1></div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Dashboard Tabs -->
+        <div class="flex space-x-2 mb-10 bg-white/5 p-1 rounded-2xl w-fit mx-auto overflow-x-auto border border-white/5">
+            <button onclick="showTab('market')" id="tab-market" class="px-6 py-3 rounded-xl font-black text-[9px] uppercase transition-all bg-white text-slate-900 shadow-xl">Public Market</button>
+            <button onclick="showTab('vault')" id="tab-vault" class="px-6 py-3 rounded-xl font-black text-[9px] uppercase transition-all text-slate-400">My Private Vault</button>
+            <button onclick="showTab('active')" id="tab-active" class="px-6 py-3 rounded-xl font-black text-[9px] uppercase transition-all text-slate-400">Active Dealing</button>
+            <button onclick="showTab('history')" id="tab-history" class="px-6 py-3 rounded-xl font-black text-[9px] uppercase transition-all text-slate-400">Closed Deals</button>
+        </div>
+
+        <div id="sec-market" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="sec-vault" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="sec-active" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="sec-history" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+        let curId = null;
+
+        async function init() {
+            const { data: { session } } = await mySupabase.auth.getSession();
+            if(!session) { window.location.href='login.html'; return; }
+            curId = session.user.id; showTab('market');
+        }
+
+        function showTab(t) {
+            ['market','vault','active','history'].forEach(s => { document.getElementById('sec-'+s).classList.add('hidden'); document.getElementById('tab-'+s).className = "px-6 py-3 rounded-xl font-black text-[9px] uppercase text-slate-400"; });
+            document.getElementById('sec-'+t).classList.remove('hidden');
+            document.getElementById('tab-'+t).className = "px-6 py-3 rounded-xl font-black text-[9px] uppercase bg-white text-slate-900 shadow-xl";
+            if(t === 'market') loadMarket(); if(t === 'vault') loadVault(); if(t === 'active') loadActive(); if(t === 'history') loadHistory();
+        }
+
+        async function loadMarket() { const { data } = await mySupabase.from('leads').select('*').eq('status', 'pending').eq('is_private', false); render(data, 'sec-market', 'market'); }
+        
+        // Vault এ পেন্ডিং এবং অ্যাডমিন পেমেন্টের অপেক্ষারত দুটোই থাকবে
+        async function loadVault() { const { data } = await mySupabase.from('leads').select('*').eq('worker_id', curId).eq('is_private', true).neq('status','completed'); render(data, 'sec-vault', 'vault'); }
+        
+        // Active Dealing এ 'proposal' এবং 'approved_by_proposal' দুটোই দেখাবে
+        async function loadActive() { 
+            const { data } = await mySupabase.from('leads').select('*').eq('closer_id', curId).or('status.eq.proposal,status.eq.approved_by_proposal'); 
+            render(data, 'sec-active', 'active'); 
+        }
+        
+        async function loadHistory() { const { data } = await mySupabase.from('leads').select('*').eq('closer_id', curId).eq('status', 'completed'); render(data, 'sec-history', 'history'); }
+
+        function render(leads, container, type) {
+            const div = document.getElementById(container);
+            if(!leads || leads.length === 0) { div.innerHTML = '<p class="col-span-full text-center py-20 font-bold opacity-20 uppercase text-xs">No Data In this list</p>'; return; }
+            let h = "";
+            leads.forEach(l => {
+                const isLocked = (type === 'market');
+                h += `<div class="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] shadow-2xl">
+                    <div class="flex justify-between mb-4">
+                        <span class="bg-indigo-600 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-tighter">${l.plan_type}</span>
+                        <span class="text-[9px] font-bold text-slate-600">#${l.id}</span>
+                    </div>
+                    <h3 class="text-xl font-black text-white">${l.business_name}</h3>
+                    <p class="text-[10px] font-bold text-indigo-400 mt-1 uppercase mb-6">${l.service_type}</p>
+                    ${isLocked ? `
+                        <p class="text-xs font-bold text-slate-400 mb-6 italic">Contacts Hidden (Accept to Reveal)</p>
+                        <button onclick="act(${l.id},'accept')" class="w-full bg-white text-slate-900 font-black py-4 rounded-2xl hover:bg-indigo-500 hover:text-white transition uppercase text-[10px] tracking-widest">Accept Dealing</button>
+                    ` : `
+                        <div class="mb-4 space-y-1 text-emerald-400 font-black text-xs bg-black/40 p-4 rounded-2xl border border-emerald-500/20">
+                            <p><i class="fas fa-phone-alt"></i> ${l.customer_phone}</p>
+                            <p><i class="fab fa-whatsapp"></i> ${l.whatsapp_number || 'N/A'}</p>
+                            <p class="text-slate-400 text-[10px] mt-2 italic"><i class="fas fa-map-marker-alt"></i> ${l.business_location || 'N/A'}</p>
+                        </div>
+                        ${type !== 'history' ? `
+                            <div class="space-y-4">
+                                <a href="https://wa.me/${l.whatsapp_number || l.customer_phone}" target="_blank" class="flex justify-center items-center gap-3 bg-emerald-500 text-white p-4 rounded-xl font-black text-[10px] uppercase shadow-xl">Contact Client <i class="fab fa-whatsapp text-lg"></i></a>
+                                
+                                ${l.status === 'proposal' ? `
+                                    <div class="bg-slate-950 p-4 rounded-2xl border border-white/5">
+                                        <label class="text-[8px] font-black text-slate-500 uppercase ml-2 mb-2 block">Negotiation Note (Price/Details)</label>
+                                        <textarea id="note-${l.id}" placeholder="Type price or customer demand..." class="w-full bg-slate-900 border-none rounded-xl p-3 text-[11px] font-bold text-indigo-300 outline-none">${l.proposal_note || ''}</textarea>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="act(${l.id},'agree')" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-black text-[9px] uppercase hover:shadow-lg">Agreed</button>
+                                        <button onclick="act(${l.id},'reject')" class="flex-1 bg-red-950/50 text-red-500 border border-red-500/20 py-3 rounded-xl font-black text-[9px] uppercase">Reject</button>
+                                    </div>
+                                ` : `
+                                    <div class="p-4 bg-indigo-900/20 border border-indigo-500/30 rounded-2xl text-center">
+                                        <p class="text-indigo-400 font-black text-[10px] uppercase animate-pulse">Waiting for Admin to Complete Deal...</p>
+                                        <p class="text-[8px] text-slate-500 mt-1 uppercase italic">আপনি Agreed করেছেন। এখন অ্যাডমিন পেমেন্ট চেক করে কাজ শেষ করবে।</p>
+                                    </div>
+                                `}
+                            </div>
+                        ` : '<p class="text-emerald-400 font-black text-center text-xs uppercase pt-4">Deal Successfully Closed ✓</p>'}
+                    `}
+                </div>`;
+            });
+            div.innerHTML = h;
+        }
+
+        async function act(id, task) {
+            let note = ""; if(task === 'agree' || task === 'reject') { note = document.getElementById('note-'+id).value; }
+            if(task==='accept') await mySupabase.from('leads').update({status:'proposal', closer_id: curId}).eq('id',id);
+            if(task==='agree') await mySupabase.from('leads').update({status:'approved_by_proposal', closer_id: curId, proposal_note: note}).eq('id',id);
+            if(task==='reject') await mySupabase.from('leads').update({status:'rejected', rejected_at: new Date().toISOString(), proposal_note: note}).eq('id',id);
+            alert("Record Updated!"); location.reload();
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>

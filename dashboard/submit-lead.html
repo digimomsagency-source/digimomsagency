@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Lead | DigiMoms</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-sans text-slate-900">
+    <nav class="bg-indigo-700 p-4 text-white shadow-xl sticky top-0 z-50 flex items-center">
+        <a href="index.html" class="mr-4"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-xl font-bold uppercase italic tracking-tighter">Client Registration</h1>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
+            <div class="bg-indigo-600 p-6 text-white text-center font-black text-sm uppercase">Lead Entry Form</div>
+            
+            <form class="p-8 space-y-5" id="leadForm">
+                <input type="text" id="bizName" required placeholder="Shop/Business Name *" class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none">
+                <textarea id="bizLoc" placeholder="Business Full Address" class="w-full p-4 bg-slate-50 border rounded-2xl h-24 outline-none font-medium"></textarea>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="tel" id="custPhone" placeholder="Mobile Number" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none font-bold">
+                    <input type="tel" id="custWhatsApp" placeholder="WhatsApp Number" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none font-bold">
+                </div>
+                <p class="text-[9px] text-amber-600 font-bold uppercase">* Phone or WhatsApp is required</p>
+
+                <select id="bizType" required class="w-full p-4 bg-slate-50 border rounded-2xl font-bold outline-none">
+                    <option value="">Choose Category</option>
+                    <option value="Retail">Retail Shop</option><option value="Medical">Doctor/Medical</option>
+                    <option value="Real Estate">Real Estate</option><option value="Education">Education</option><option value="other">Other</option>
+                </select>
+
+                <div id="otherInputBox" class="hidden"><input type="text" id="otherBizDetail" placeholder="Specify Business Type *" class="w-full p-4 bg-indigo-50 border-2 border-indigo-200 rounded-2xl font-bold"></div>
+
+                <div class="flex items-center space-x-3 p-5 bg-indigo-50 rounded-3xl border-2 border-dashed border-indigo-100 group">
+                    <input type="checkbox" id="isPrivate" class="w-6 h-6 text-indigo-600 rounded">
+                    <div><label for="isPrivate" class="text-xs font-black text-indigo-800 uppercase">Private Lead</label><p class="text-[9px] text-indigo-400 font-bold uppercase">Only you will handle this</p></div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-slate-900 transition-all uppercase tracking-widest text-xs">Register New Lead</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('bizType').addEventListener('change', function() {
+            document.getElementById('otherInputBox').classList.toggle('hidden', this.value !== 'other');
+        });
+
+        document.getElementById('leadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data: { session } } = await mySupabase.auth.getSession();
+            if(!session) return alert("Login required!");
+
+            const phone = document.getElementById('custPhone').value;
+            const wa = document.getElementById('custWhatsApp').value;
+            if(!phone && !wa) return alert("Mobile or WhatsApp number missing!");
+
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Verifying Database..."; btn.disabled = true;
+
+            const searchNum = phone || wa;
+
+            try {
+                // ১. ডুপ্লিকেট সিকিউরিটি চেক
+                const { data: records } = await mySupabase.from('leads').select('*').eq('customer_phone', searchNum).order('created_at', {ascending: false}).limit(1);
+
+                if(records && records.length > 0) {
+                    const last = records[0];
+                    const now = new Date();
+
+                    // যদি কাজ চলমান থাকে
+                    if(['pending', 'proposal', 'approved_by_proposal'].includes(last.status)) {
+                        alert("FAILED: This client is currently active in someone's list.");
+                        btn.innerText = "Register New Lead"; btn.disabled = false;
+                        return;
+                    }
+
+                    // যদি কমপ্লিট হয়ে থাকে (৩৬৫ দিন লজিক)
+                    if(last.status === 'completed') {
+                        const compDate = new Date(last.completed_at || last.created_at);
+                        const diff = Math.ceil(Math.abs(now - compDate) / (1000 * 60 * 60 * 24));
+                        if(diff < 365) {
+                            alert(`RESTRICTED: This business already has our service. Please wait ${365 - diff} more days before submitting again.`);
+                            btn.innerText = "Register New Lead"; btn.disabled = false;
+                            return;
+                        }
+                    }
+
+                    // যদি রিজেক্ট হয়ে থাকে (৯০ দিন লজিক)
+                    if(last.status === 'rejected') {
+                        const rejDate = new Date(last.rejected_at || last.created_at);
+                        const diff = Math.ceil(Math.abs(now - rejDate) / (1000 * 60 * 60 * 24));
+                        if(diff < 90) {
+                            alert(`RESTRICTED: Client was recently rejected. Try again after ${90 - diff} days.`);
+                            btn.innerText = "Register New Lead"; btn.disabled = false;
+                            return;
+                        }
+                    }
+                }
+
+                // ২. সব ঠিক থাকলে ডাটা সেভ
+                const finalBiz = document.getElementById('bizType').value === 'other' ? document.getElementById('otherBizDetail').value : document.getElementById('bizType').value;
+
+                const { error } = await mySupabase.from('leads').insert([{
+                    worker_id: session.user.id,
+                    business_name: document.getElementById('bizName').value,
+                    business_location: document.getElementById('bizLoc').value,
+                    customer_phone: searchNum,
+                    whatsapp_number: wa,
+                    service_type: finalBiz,
+                    is_private: document.getElementById('isPrivate').checked,
+                    status: 'pending',
+                    plan_type: 'Starter'
+                }]);
+
+                if(!error) { alert("SUCCESS: Client Registered!"); window.location.href = 'index.html'; }
+                else { alert(error.message); btn.innerText = "Register New Lead"; btn.disabled = false; }
+
+            } catch (err) { alert(err.message); btn.innerText = "Register New Lead"; btn.disabled = false; }
+        });
+    </script>
+</body>
+</html>

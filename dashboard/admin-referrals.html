@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Referral Network | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans p-8">
+    <h2 class="text-3xl font-black uppercase italic text-indigo-400 mb-10">Referral Earnings Tracker</h2>
+    
+    <div class="overflow-x-auto bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl">
+        <table class="w-full text-left text-[10px] font-black uppercase tracking-widest">
+            <thead class="bg-slate-800 text-indigo-300 border-b border-slate-700">
+                <tr>
+                    <th class="p-6">Referrer (কে এনেছে)</th>
+                    <th class="p-6">New Worker (কে জয়েন করেছে)</th>
+                    <th class="p-6 text-emerald-400">Total Comm. Earned</th>
+                    <th class="p-6">Status</th>
+                </tr>
+            </thead>
+            <tbody id="ref-rows" class="text-slate-400"></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
+        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
+        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function load() {
+            // রেফারেল নেটওয়ার্ক খুঁজে বের করা
+            const { data, error } = await mySupabase.from('profiles').select('full_name, phone, referrer_id, wallet_balance').not('referrer_id', 'is', null);
+            
+            const tbody = document.getElementById('ref-rows'); tbody.innerHTML = "";
+            
+            for(let worker of data) {
+                // রেফারারের নাম বের করা
+                const { data: boss } = await mySupabase.from('profiles').select('full_name, phone').eq('id', worker.referrer_id).single();
+                
+                // এই রেফারেল থেকে কত ইনকাম হয়েছে তা দেখা (Transactions থেকে)
+                const { data: trans } = await mySupabase.from('transactions').select('amount').eq('worker_id', worker.referrer_id).ilike('description', `%from ${worker.id}%`);
+                let totalFromHim = trans ? trans.reduce((sum, t) => sum + t.amount, 0) : 0;
+
+                tbody.innerHTML += `
+                <tr class="border-b border-slate-800">
+                    <td class="p-6 text-indigo-400 font-bold">${boss?.full_name || 'N/A'}<br><span class="text-slate-600 text-[8px]">${boss?.phone || ''}</span></td>
+                    <td class="p-6 text-white">${worker.full_name}<br><span class="text-slate-600 text-[8px]">${worker.phone}</span></td>
+                    <td class="p-6 text-emerald-400 font-black text-xs">₹${totalFromHim.toFixed(2)}</td>
+                    <td class="p-6"><span class="px-2 py-1 bg-indigo-900/30 rounded text-[7px]">10% ACTIVE</span></td>
+                </tr>`;
+            }
+        }
+        window.onload = load;
+    </script>
+</body>
+</html>

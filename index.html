@@ -1,327 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard | DigiMoms</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .sidebar-link { @apply flex items-center space-x-3 p-4 rounded-2xl transition-all cursor-pointer text-slate-500 font-bold text-xs uppercase tracking-widest; }
-        .sidebar-link:hover { @apply bg-indigo-50 text-indigo-600; }
-        .sidebar-active { @apply bg-indigo-600 text-white shadow-xl shadow-indigo-200 hover:bg-indigo-700; }
-        .tab-content { display: none; }
-        .tab-active { display: block; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 100% Google SEO Meta Tags -->
+    <title>DigiMoms | Sabang's Premium Web Development & Digital Marketing Agency</title>
+    <meta name="description" content="DigiMoms is Sabang's premier web development agency by Tanmoy Jana. Get professional websites, SEO, and Digital Marketing starting at only ₹799 in West Bengal.">
+    <meta name="keywords" content="DigiMoms, Web Development Sabang, Website Design Midnapore, Tanmoy Jana, Low cost website West Bengal, Digital Marketing Sabang, 799 offer website">
+    <meta name="author" content="Tanmoy Jana">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.digimoms.in" />
 
-        /* মোবাইল মেনু স্লাইড এনিমেশন */
-        @media (max-width: 1023px) {
-            #mainSidebar { 
-                position: fixed; 
-                z-index: 100; 
-                height: 100%; 
-                transform: translateX(-100%); 
-                transition: transform 0.3s ease-in-out; 
-            }
-            #mainSidebar.show { transform: translateX(0); display: flex !important; }
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        :root {
+            --primary: #2874f0; 
+            --primary-dark: #1c54b2;
+            --secondary: #fb641b;
+            --accent: #ff9f00;
+            --bg-light: #f1f3f6;
+            --text-dark: #212121;
+            --text-muted: #666;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* --- PRELOADER STYLE --- */
+        #loader-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .loader-circle { width: 80px; height: 80px; border: 8px solid #f3f3f3; border-top: 8px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        .loader-percent { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 800; color: var(--primary); }
+        .loader-text { font-family: 'Open Sans', sans-serif; color: #444; font-size: 13px; margin-top: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* --- SCROLL REVEAL STYLE --- */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.9s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- GLOBAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: var(--text-dark); background: var(--bg-light); overflow-x: hidden; }
+        body.loading { overflow: hidden; }
+        body.loaded { overflow-y: auto; }
+        h1, h2, h3, h4, .logo { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+        a { text-decoration: none; transition: 0.3s; }
+        ul { list-style: none; }
+        section { padding: 80px 8%; position: relative; }
+        .container { max-width: 1300px; margin: auto; }
+
+        .v-title { text-align: center; margin-bottom: 60px; }
+        .v-title h2 { font-size: 36px; position: relative; display: inline-block; padding-bottom: 15px; }
+        .v-title h2::after { content: ''; position: absolute; width: 60%; height: 4px; background: var(--secondary); bottom: 0; left: 20%; border-radius: 2px; }
+
+        .top-bar { background: var(--primary-dark); color: white; padding: 8px 8%; font-size: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 1001; }
+        header { background: var(--primary); padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow); }
+        .logo { font-size: 28px; color: white; letter-spacing: 1px; cursor: pointer; }
+        .logo span { color: var(--accent); }
+        nav ul { display: flex; gap: 20px; align-items: center; }
+        nav ul li a { color: white; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+        nav ul li a:hover { color: var(--accent); }
+        
+        .hero { height: 90vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; text-align: center; color: white; }
+        .hero-box h1 { font-size: 55px; margin-bottom: 20px; line-height: 1.2; font-weight: 800; min-height: 130px; }
+        .btn { padding: 15px 35px; border-radius: 4px; font-weight: 700; cursor: pointer; border: none; text-transform: uppercase; font-size: 14px; transition: 0.4s; display: inline-block; }
+        .btn-p { background: var(--secondary); color: white; }
+        .btn-s { background: var(--white); color: var(--primary); }
+
+        .tech-slide { background: white; padding: 40px 0; overflow: hidden; display: flex; }
+        .ts-track { display: flex; gap: 100px; animation: slide 25s linear infinite; }
+        @keyframes slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .ts-item { display: flex; align-items: center; gap: 12px; font-weight: 700; color: #444; font-size: 20px; white-space: nowrap; }
+
+        .about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-img img { width: 100%; border-radius: 8px; box-shadow: 20px 20px 0 var(--primary); }
+        
+        .ceo-section { background: white; border-radius: 15px; display: grid; grid-template-columns: 1fr 1.5fr; overflow: hidden; box-shadow: var(--shadow); }
+        .ceo-img img { width: 100%; height: 500px; object-fit: cover; }
+        .ceo-content { padding: 40px; }
+
+        .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .p-box { background: white; border: 1px solid #ddd; border-radius: 10px; padding: 40px 25px; text-align: center; transition: 0.4s; }
+        .p-box.popular { border: 2px solid var(--primary); transform: scale(1.05); position: relative; }
+        .price { font-size: 42px; font-weight: 800; color: var(--primary); margin: 20px 0; }
+
+        .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .demo-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+        .demo-img-box { height: 250px; overflow: hidden; }
+        .demo-img-scroll { width: 100%; height: 100%; background-size: 100% auto; background-position: top; transition: 6s ease-in-out; }
+        .demo-card:hover .demo-img-scroll { background-position: bottom; }
+
+        .split-sec { display: flex; flex-wrap: wrap; gap: 30px; }
+        .split-card { flex: 1; min-width: 300px; background: white; border-radius: 15px; overflow: hidden; box-shadow: var(--shadow); }
+        
+        footer { background: #172337; color: white; padding: 80px 8% 20px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; }
+
+        @media (max-width: 768px) {
+            .hero-box h1 { font-size: 30px; }
+            .about-wrap, .ceo-section, .split-sec { grid-template-columns: 1fr; }
+            nav { display: none; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 flex h-screen overflow-hidden">
+<body class="loading">
 
-    <!-- SIDEBAR (ID added: mainSidebar) -->
-    <aside id="mainSidebar" class="w-72 bg-white border-r border-slate-100 flex flex-col p-6 hidden lg:flex shadow-sm">
-        <div class="mb-10 flex items-center justify-between px-2">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-700 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-university text-white text-lg"></i></div>
-                <h1 class="text-xl font-black uppercase tracking-tighter text-slate-800">DigiMoms</h1>
-            </div>
-            <!-- মোবাইল স্ক্রিনে মেনু বন্ধ করার বাটন (নতুন যোগ করা হয়েছে) -->
-            <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 text-xl"><i class="fas fa-times"></i></button>
+    <!-- PRELOADER -->
+    <div id="loader-wrapper">
+        <h1 style="color: var(--primary); font-family: 'Montserrat', sans-serif; letter-spacing: 2px;">DIGI<span style="color:var(--secondary)">MOMS</span></h1>
+        <div class="loader-circle"></div>
+        <div class="loader-percent" id="count">0%</div>
+        <div class="loader-text">
+            <p id="dyn-text">Verifying Security Protocols...</p>
+            <p id="dyn-text-bn">সিকিউরিটি প্রোটোকল যাচাই করা হচ্ছে...</p>
         </div>
-        <nav class="flex-1 space-y-1">
-            <p class="px-4 mb-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Partner Menu</p>
-            <div onclick="showTab('home')" id="link-home" class="sidebar-link sidebar-active"><i class="fas fa-th-large w-5"></i><span>Overview</span></div>
-            <div onclick="showTab('team')" id="link-team" class="sidebar-link"><i class="fas fa-users-cog w-5"></i><span>My Network</span></div>
-            <div onclick="showTab('history')" id="link-history" class="sidebar-link"><i class="fas fa-file-invoice-dollar w-5"></i><span>Income Logs</span></div>
-            <div onclick="showTab('support')" id="link-support" class="sidebar-link"><i class="fas fa-headset w-5"></i><span>Support Desk</span></div>
-            <a href="worker-rewards.html" class="sidebar-link"><i class="fas fa-gift w-5"></i><span>My Rewards</span></a>
+        <audio id="loader-audio" src="audio.mp3" preload="auto"></audio>
+    </div>
+
+    <!-- 1. Top Bar -->
+    <div class="top-bar">
+        <span><i class="fas fa-envelope"></i> digimomsagency@gmail.com</span>
+        <span><i class="fab fa-whatsapp" style="color: #25D366;"></i> 9475388085 (Only WhatsApp)</span>
+    </div>
+
+    <!-- 2. Header -->
+    <header>
+        <div class="logo" onclick="location.reload()">DIGI<span>MOMS</span></div>
+        <nav>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#plans">Pricing</a></li>
+                <li><a href="#showcase">Portfolio</a></li>
+                <li><a href="#academy">Academy</a></li>
+                <!-- NEW LOGIN LINKS ADDED HERE -->
+                <li><a href="https://www.digimoms.in/dashboard/login.html" style="color: var(--accent);">Worker Login</a></li>
+                <li><a href="dashboard/staff-login.html" style="color: #00ff00;">Staff Login</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </nav>
-        <div class="mt-auto pt-6 border-t border-slate-100 text-center">
-            <p class="text-[8px] font-black text-red-500 uppercase tracking-widest mb-4 italic">Security: One Account Per Person</p>
-            <button id="sidebarLogout" class="w-full bg-slate-900 text-white p-4 rounded-2xl font-black text-[10px] uppercase hover:bg-red-600 transition">Logout Account</button>
+        <div class="nav-btns">
+            <button class="btn btn-p" style="padding: 10px 20px;" onclick="toWA('Hi, I want a quote for my website.')">Free Quote</button>
         </div>
-    </aside>
+    </header>
 
-    <!-- MAIN VIEWPORT -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-slate-50">
-        <!-- Mobile & Top Nav (onclick added to menu button) -->
-        <nav class="p-4 border-b border-slate-200 sticky top-0 z-50 bg-white/80 backdrop-blur-md flex justify-between items-center px-4 md:px-8">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="lg:hidden text-indigo-700 text-xl"><i class="fas fa-bars"></i></button>
-                <h2 id="tab-title" class="font-black uppercase tracking-widest text-[10px] text-slate-400 border-l-2 border-indigo-600 pl-3">Dashboard</h2>
+    <!-- 3. Hero Section -->
+    <section class="hero">
+        <div class="hero-box">
+            <h1>Elevate Your Business With <br>
+                <span id="typewriter" style="color:var(--accent); border-right: 3px solid var(--accent); padding-right: 5px;"></span>
+            </h1>
+            <p>DigiMoms specializes in creating premium, responsive websites that drive results. From single pages to complex E-commerce platforms, we build digital success stories.</p>
+            <div style="margin-top:30px;">
+                <button class="btn btn-p" onclick="window.location='#plans'">Explore Plans</button>
+                <button class="btn btn-s" onclick="window.location='#showcase'">View Our Work</button>
             </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p class="text-[10px] font-black text-slate-800 uppercase" id="top-name">Loading...</p>
-                    <p class="text-[8px] font-bold text-indigo-500 uppercase tracking-widest">Active Partner</p>
-                </div>
-                <button id="logoutBtn" class="bg-red-50 text-red-600 p-2 rounded-xl text-sm lg:hidden"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </nav>
-
-        <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
-
-            <!-- TAB: OVERVIEW -->
-            <div id="tab-home" class="tab-content tab-active space-y-8 animate-in fade-in duration-500">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
-                    <div class="z-10">
-                        <h2 class="text-3xl font-black text-slate-800">Hello, <span id="worker-name">Champ</span>!</h2>
-                        <p id="worker-phone" class="text-slate-400 font-bold text-xs uppercase tracking-widest mt-1">ID: --</p>
-                        <div id="upper-member-box" class="mt-3 inline-flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                            <i class="fas fa-user-tie text-indigo-500 text-[10px]"></i>
-                            <span class="text-[9px] font-black text-indigo-600 uppercase tracking-tighter" id="referrer-info">Invited By: System</span>
-                        </div>
-                        <div class="mt-4"><button onclick="toggleModal('profileModal')" class="bg-slate-100 text-indigo-600 px-6 py-2 rounded-xl font-black text-[10px] uppercase border border-indigo-100 hover:bg-indigo-600 hover:text-white transition">Edit Profile & Bank</button></div>
-                    </div>
-                    <div class="text-center z-10">
-                        <button id="requestPayoutBtn" class="bg-emerald-500 text-white px-10 py-5 rounded-[2rem] font-black uppercase text-xs shadow-xl disabled:opacity-30 transition hover:scale-105" disabled>Request Payout</button>
-                        <p class="text-[9px] font-bold text-slate-400 mt-3 uppercase tracking-widest">Min. ₹200 required to withdraw</p>
-                    </div>
-                    <i class="fas fa-rocket absolute -right-6 -bottom-6 text-9xl text-slate-50 opacity-50"></i>
-                </div>
-
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 text-center">
-                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-indigo-600 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Main Wallet</p><h3 class="text-2xl font-black text-slate-800" id="worker-wallet">₹0.00</h3></div>
-                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-emerald-500 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Locked Bonus</p><h3 class="text-2xl font-black text-emerald-600" id="locked-bonus">₹0.00</h3></div>
-                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-blue-500 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Leads</p><h3 class="text-2xl font-black" id="total-leads">0</h3></div>
-                    <div class="bg-white p-6 rounded-[2rem] border-b-4 border-amber-500 shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Sales</p><h3 class="text-2xl font-black" id="pending-leads">0</h3></div>
-                </div>
-
-                <div id="training-content"></div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <a href="submit-lead.html" class="flex items-center justify-between bg-indigo-600 text-white p-8 rounded-[2.5rem] shadow-xl transition transform hover:scale-[1.02] group"><div class="flex items-center space-x-4"><i class="fas fa-plus-circle text-3xl"></i><div><p class="font-black text-xl uppercase">Submit Lead</p><p class="text-[10px] text-indigo-200">Start new registration</p></div></div><i class="fas fa-chevron-right opacity-30 group-hover:opacity-100"></i></a>
-                    <a href="proposal.html" class="flex items-center justify-between bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl transition transform hover:scale-[1.02] group"><div class="flex items-center space-x-4"><i class="fas fa-briefcase text-3xl"></i><div><p class="font-black text-xl uppercase">Proposal Dept</p><p class="text-[10px] text-slate-400">Marketplace & Closing</p></div></div><i class="fas fa-chevron-right opacity-30 group-hover:opacity-100"></i></a>
-                </div>
-
-                <div class="bg-white rounded-[2.5rem] border border-slate-200 overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center"><h2 class="font-black text-slate-800 uppercase text-xs tracking-widest">My Combined Activities (Gen & Close)</h2></div>
-                    <div class="overflow-x-auto p-4" id="leads-container"></div>
-                </div>
-            </div>
-
-            <!-- TAB: TEAM -->
-            <div id="tab-team" class="tab-content space-y-8 animate-in slide-in-from-right-10 duration-500">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 border-b font-black text-xs uppercase text-indigo-600 tracking-widest bg-indigo-50/50">My Network (10% Income)</div>
-                        <div id="team-list" class="p-4 space-y-3 overflow-y-auto max-h-[600px]"></div>
-                    </div>
-                    <div class="lg:col-span-2 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 bg-slate-900 text-white flex justify-between items-center"><h3 class="font-black uppercase text-xs tracking-widest">Global Top Earners</h3></div>
-                        <div id="leaderboard-list" class="p-6 space-y-4"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB: HISTORY -->
-            <div id="tab-history" class="tab-content space-y-8 animate-in slide-in-from-right-10 duration-500">
-                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8">
-                    <h3 class="font-black uppercase text-sm mb-6 text-indigo-700 italic">Income Logs / আয়ের ইতিহাস</h3>
-                    <div id="earning-history" class="space-y-3"></div>
-                </div>
-            </div>
-
-            <!-- TAB: SUPPORT -->
-            <div id="tab-support" class="tab-content space-y-8 animate-in slide-in-from-right-10 duration-500 mb-20">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    <div class="bg-white rounded-[2.5rem] shadow-xl border border-indigo-100 overflow-hidden">
-                        <div class="bg-indigo-700 p-8 text-white"><h3 class="font-black uppercase text-lg tracking-tighter">Support Desk</h3><p class="text-indigo-100 text-[10px] font-bold uppercase mt-1">Submit your tickets below</p></div>
-                        <form id="reportForm" class="p-8 space-y-4">
-                            <input type="text" id="subject" placeholder="Subject / বিষয়" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 font-bold" required>
-                            <textarea id="msg" placeholder="Tell us in detail / বিস্তারিত লিখুন..." class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl h-32 outline-none focus:border-indigo-500 font-medium" required></textarea>
-                            <button type="submit" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-indigo-600 transition uppercase tracking-widest text-xs">Submit Report</button>
-                        </form>
-                    </div>
-                    <div>
-                        <h4 class="font-black text-xs uppercase text-slate-400 mb-6 tracking-widest">Recent Ticket Status</h4>
-                        <div id="report-history" class="space-y-4 overflow-y-auto max-h-[600px]"></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </main>
+    </section>
 
-    <!-- Edit Profile Modal -->
-    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-[3rem] p-8 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-8"><h3 class="text-xl font-black uppercase tracking-widest">Edit Profile & Bank</h3><button onclick="toggleModal('profileModal')" class="text-2xl text-red-500">&times;</button></div>
-            <form id="profileForm" class="space-y-4">
-                <input type="text" id="editName" placeholder="Full Name" class="w-full p-4 bg-slate-50 border rounded-xl font-bold outline-none focus:ring-2 focus:ring-indigo-600">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="editBank" placeholder="Bank Name" class="p-4 bg-slate-50 border rounded-xl outline-none">
-                    <input type="text" id="editAC" placeholder="Account Number" class="p-4 bg-slate-50 border rounded-xl outline-none">
-                    <input type="text" id="editIFSC" placeholder="IFSC Code" class="p-4 bg-slate-50 border rounded-xl outline-none">
-                    <input type="text" id="editUPI" placeholder="UPI ID (e.g. name@paytm)" class="p-4 bg-slate-50 border rounded-xl outline-none">
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white font-black py-5 rounded-2xl shadow-xl uppercase transition hover:bg-indigo-700">Save Changes</button>
-            </form>
+    <!-- 4. Tech Slider -->
+    <div class="tech-slide">
+        <div class="ts-track">
+            <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
+            <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
+            <div class="ts-item"><i class="fab fa-js"></i> JAVASCRIPT</div>
+            <div class="ts-item"><i class="fab fa-react"></i> REACT JS</div>
+            <div class="ts-item"><i class="fab fa-wordpress"></i> WORDPRESS</div>
+            <div class="ts-item"><i class="fab fa-php"></i> PHP/MYSQL</div>
+            <!-- Loop -->
+            <div class="ts-item"><i class="fab fa-html5"></i> HTML5 EXPERT</div>
+            <div class="ts-item"><i class="fab fa-css3-alt"></i> ADVANCED CSS</div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 5. About Us -->
+    <section id="about" class="reveal">
+        <div class="container about-wrap">
+            <div class="about-img">
+                <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop" alt="Team Work">
+            </div>
+            <div class="about-text">
+                <h3>Innovation Meets Excellence</h3>
+                <p>DigiMoms is a dedicated Digital Marketing and Web Development Institute. We provide professional online identities for every business, combining local values with international design standards.</p>
+                <div style="margin-top: 20px;">
+                    <i class="fas fa-check-circle" style="color:var(--primary)"></i> 100% Mobile Responsive Designs<br>
+                    <i class="fas fa-check-circle" style="color:var(--primary)"></i> SEO Friendly Structure
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. CEO Section -->
+    <section id="ceo" class="reveal">
+        <div class="container ceo-section">
+            <div class="ceo-img">
+                <img src="https://digimoms.in/ami-final.jpg" alt="Tanmoy Jana">
+            </div>
+            <div class="ceo-content">
+                <h3>Tanmoy Jana</h3>
+                <span style="color:var(--secondary); font-weight:700;">Founder & CEO, DigiMoms</span>
+                <blockquote style="font-style:italic; border-left:4px solid var(--accent); padding-left:20px; margin:20px 0;">"My mission is to provide premium web solutions to businesses all over India at a price that truly makes sense. Your growth is our success."</blockquote>
+                <button class="btn btn-p" onclick="toWA('Hi Tanmoy, I want to discuss a project.')">Connect Directly</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Pricing Plans -->
+    <section id="plans" class="reveal">
+        <div class="v-title">
+            <h2>Our Pricing & Plans</h2>
+        </div>
+        <div class="container plan-grid">
+            <div class="p-box">
+                <h3>Starter</h3>
+                <div class="price"><span style="font-size:18px; text-decoration:line-through; color:#888;">₹999</span> ₹799</div>
+                <ul style="text-align:left; margin-bottom:20px;">
+                    <li><i class="fas fa-check"></i> 1 Landing Page</li>
+                    <li><i class="fas fa-check"></i> Domain & Hosting</li>
+                </ul>
+                <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Starter Plan ₹799')">Order Now</button>
+            </div>
+            <div class="p-box popular">
+                <h3>Business</h3>
+                <div class="price">₹4,999</div>
+                <ul style="text-align:left; margin-bottom:20px;">
+                    <li><i class="fas fa-check"></i> 7 Professional Pages</li>
+                    <li><i class="fas fa-check"></i> SEO & Google Map</li>
+                </ul>
+                <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Business Plan ₹4,999')">Select Plan</button>
+            </div>
+            <div class="p-box">
+                <h3>Premium</h3>
+                <div class="price">₹12,999</div>
+                <ul style="text-align:left; margin-bottom:20px;">
+                    <li><i class="fas fa-check"></i> E-commerce Store</li>
+                    <li><i class="fas fa-check"></i> Payment Gateway</li>
+                </ul>
+                <button class="btn btn-p" style="width:100%" onclick="toWA('Inquiry: Premium Plan')">Select Plan</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Showcase -->
+    <section id="showcase" class="reveal">
+        <div class="v-title"><h2>Project Showcase</h2></div>
+        <div class="container demo-grid" id="demo-list">
+            <!-- Dynamic Content -->
+        </div>
+    </section>
+
+    <!-- 10. Academy & Earning -->
+    <section id="academy" class="reveal">
+        <div class="container split-sec">
+            <div class="split-card">
+                <div style="height:200px; background: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop'); background-size:cover;"></div>
+                <div style="padding:30px;">
+                    <h3>DigiMoms Academy</h3>
+                    <p>Learn Web Development with live projects and internships.</p>
+                    <button class="btn btn-p" style="margin-top:20px;" onclick="toWA('Join Academy')">Join Now</button>
+                </div>
+            </div>
+            <div class="split-card">
+                <div style="height:200px; background: url('https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop'); background-size:cover;"></div>
+                <div style="padding:30px;">
+                    <h3>Earn With Us</h3>
+                    <p>Be a partner and earn high commissions by referring projects.</p>
+                    <!-- UPDATED BUTTON LINK HERE -->
+                    <button class="btn btn-s" style="margin-top:20px; border:1px solid var(--secondary); color:var(--secondary)" onclick="window.location.href='dashboard/earn-with-us.html'">Start Earning</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4 style="color:white; font-size:24px;">DIGI<span>MOMS</span></h4>
+                <p>West Bengal's leading digital agency providing high-quality web solutions.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#" style="color:#bdc3c7;">Privacy Policy</a></li>
+                    <li><a href="#" style="color:#bdc3c7;">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>Sabang, Paschim Medinipur, WB</p>
+                <p>9475388085</p>
+            </div>
+        </div>
+        <div style="text-align:center; padding-top:40px; color:#7f8c8d;">&copy; 2026 DigiMoms Digital Revolution. All Rights Reserved.</div>
+    </footer>
+
     <script>
-        const supabaseUrl = 'https://laakhawalhjkejafhtvf.supabase.co'; 
-        const supabaseKey = 'sb_publishable_H755KJqOuQ1qqrGWtYNlLw_WIgsRvG8';
-        const mySupabase = supabase.createClient(supabaseUrl, supabaseKey);
-        let curUser = null; let currentWallet = 0;
+        // --- PRELOADER & AUDIO LOGIC ---
+        let count = 0;
+        const loaderAudio = document.getElementById('loader-audio');
+        const textEng = document.getElementById('dyn-text');
+        const textBen = document.getElementById('dyn-text-bn');
+        const statusE = ["Syncing Assets...", "Optimizing UI...", "Connecting Secure Servers...", "Ready to Launch!"];
+        const statusB = ["ফাইল সিঙ্ক হচ্ছে...", "ইউজার ইন্টারফেস অপ্টিমাইজ হচ্ছে...", "সার্ভার কানেক্ট হচ্ছে...", "প্রস্তুত হচ্ছে!"];
+        let sIdx = 0;
 
-        // মোবাইল মেনু কন্ট্রোল করার ফাংশন (নতুন যোগ করা হয়েছে)
-        function toggleSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            sidebar.classList.toggle('show');
+        function startVoice() {
+            loaderAudio.play().catch(e => console.log("Waiting for touch"));
         }
+        document.addEventListener('click', startVoice, {once: true});
+        document.addEventListener('touchstart', startVoice, {once: true});
 
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('tab-active'));
-            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('sidebar-active'));
-            document.getElementById('tab-'+tabId).classList.add('tab-active');
-            document.getElementById('link-'+tabId).classList.add('sidebar-active');
-            document.getElementById('tab-title').innerText = tabId.toUpperCase();
-            
-            // মেনু থেকে ট্যাব সিলেক্ট করলে মোবাইল মেনু অটোমেটিক বন্ধ হবে
-            if(window.innerWidth < 1024) toggleSidebar();
-        }
-
-        async function init() {
-            const { data: { session } } = await mySupabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            curUser = session.user;
-            
-            const { data: prof } = await mySupabase.from('profiles').select('*').eq('id', curUser.id).single();
-            if(prof) {
-                currentWallet = prof.wallet_balance || 0;
-                document.getElementById('worker-name').innerText = prof.full_name;
-                document.getElementById('top-name').innerText = prof.full_name;
-                document.getElementById('worker-phone').innerText = 'Partner ID: ' + prof.phone;
-                document.getElementById('worker-wallet').innerText = '₹' + currentWallet.toFixed(2);
-                document.getElementById('locked-bonus').innerText = '₹' + (prof.locked_bonus || 0).toFixed(2);
-                if(currentWallet >= 200) { document.getElementById('requestPayoutBtn').disabled = false; }
-                document.getElementById('editName').value = prof.full_name;
-                document.getElementById('editBank').value = prof.bank_name || '';
-                document.getElementById('editAC').value = prof.account_no || '';
-                document.getElementById('editIFSC').value = prof.ifsc_code || '';
-                document.getElementById('editUPI').value = prof.upi_id || '';
+        let counter = setInterval(() => {
+            if(count < 99) { 
+                count++;
+                document.getElementById('count').innerText = count + '%';
             }
-
-            loadUnifiedLeads(curUser.id);
-            loadTransactions(curUser.id);
-            loadTraining();
-            loadLeaderboard();
-            loadLowerTeam(curUser.id);
-            loadComplaints(curUser.id);
-        }
-
-        async function loadComplaints(uid) {
-            const { data: reports } = await mySupabase.from('reports').select('*').eq('user_id', uid).order('created_at', {ascending:false});
-            const div = document.getElementById('report-history');
-            if(reports) {
-                div.innerHTML = "";
-                reports.forEach(r => {
-                    const dt = new Date(r.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                    div.innerHTML += `<div class="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm mb-3">
-                        <div class="flex justify-between items-start mb-2"><span class="text-[8px] font-black uppercase text-slate-400 tracking-widest">${dt}</span><span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${r.status==='resolved'?'bg-emerald-100 text-emerald-600':'bg-amber-100 text-amber-600'}">${r.status}</span></div>
-                        <p class="font-black text-[10px] uppercase text-slate-800">${r.subject}</p>
-                        <p class="text-[10px] text-slate-500 mt-1">${r.message}</p>
-                        ${r.admin_reply ? `<div class="mt-4 p-4 bg-indigo-50 rounded-2xl border-l-4 border-indigo-600"><p class="text-[8px] font-black text-indigo-700 uppercase mb-1">Admin Response:</p><p class="text-[10px] font-bold italic text-slate-700">${r.admin_reply}</p></div>` : ''}
-                    </div>`;
-                });
+            if(count % 25 === 0) {
+                textEng.innerText = statusE[sIdx];
+                textBen.innerText = statusB[sIdx];
+                sIdx = (sIdx + 1) % statusE.length;
             }
-        }
+        }, 60);
 
-        async function loadUnifiedLeads(uid) {
-            const { data: leads } = await mySupabase.from('leads').select('*').or(`worker_id.eq.${uid},closer_id.eq.${uid}`).order('created_at', {ascending:false});
-            const container = document.getElementById('leads-container');
-            if(leads && leads.length > 0) {
-                document.getElementById('total-leads').innerText = leads.length;
-                document.getElementById('pending-leads').innerText = leads.filter(l => l.status !== 'completed' && l.status !== 'fake').length;
-                let h = '<table class="w-full text-left text-[10px] font-black uppercase"><thead class="text-slate-400 border-b"><tr><th class="p-4">Lead Detail</th><th class="p-4">Plan</th><th class="p-4">Status</th></tr></thead><tbody>';
-                leads.forEach(l => {
-                    let role = l.worker_id === uid ? '<span class="text-indigo-500">[GEN]</span>' : '<span class="text-emerald-500">[CLOSE]</span>';
-                    let sCol = l.status === 'completed' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-500 bg-slate-100';
-                    h += `<tr class="border-b last:border-0 hover:bg-slate-50"><td class="p-4">${role} ${l.business_name}</td><td class="p-4 font-bold text-slate-700">${l.plan_type}</td><td class="p-4"><span class="px-2 py-1 rounded-full text-[8px] ${sCol}">${l.status}</span></td></tr>`;
-                });
-                container.innerHTML = h + '</tbody></table>';
+        window.onload = () => {
+            clearInterval(counter);
+            document.getElementById('count').innerText = '100%';
+            setTimeout(() => {
+                const loader = document.getElementById('loader-wrapper');
+                loader.style.transition = '0.8s';
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                }, 800);
+            }, 1000);
+            renderProjects();
+        };
+
+        // --- TYPING EFFECT ---
+        const words = ["Premium Websites", "E-commerce Solutions", "Modern UI Designs", "High-Performance Code"];
+        let wIdx = 0, cIdx = 0, isDel = false;
+        function type() {
+            const target = document.getElementById("typewriter");
+            const curWord = words[wIdx];
+            if (isDel) {
+                target.textContent = curWord.substring(0, cIdx - 1);
+                cIdx--;
+            } else {
+                target.textContent = curWord.substring(0, cIdx + 1);
+                cIdx++;
+            }
+            if (!isDel && cIdx === curWord.length) { isDel = true; setTimeout(type, 2000); }
+            else if (isDel && cIdx === 0) { isDel = false; wIdx = (wIdx + 1) % words.length; setTimeout(type, 500); }
+            else { setTimeout(type, isDel ? 50 : 150); }
+        }
+        type();
+
+        // --- SCROLL REVEAL ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) { reveals[i].classList.add("active"); }
             }
         }
+        window.addEventListener("scroll", reveal);
 
-        async function loadTransactions(uid) {
-            const { data: trans } = await mySupabase.from('transactions').select('*').eq('worker_id', uid).order('created_at', {ascending:false});
-            const div = document.getElementById('earning-history');
-            if(trans && trans.length > 0) {
-                div.innerHTML = "";
-                trans.forEach(t => {
-                    const isInc = parseFloat(t.amount) > 0;
-                    div.innerHTML += `<div class="p-4 rounded-2xl border bg-slate-50 flex justify-between items-center mb-2 shadow-sm"><p class="font-black text-[10px] text-indigo-700 uppercase tracking-tighter">${t.description}</p><p class="font-black text-sm ${isInc ? 'text-emerald-600' : 'text-red-600'}">${isInc?'+':''}₹${Math.abs(t.amount).toFixed(2)}</p></div>`;
-                });
-            }
+        // --- RENDER PROJECTS ---
+        const demoProjects = [
+            { title: "Restaurant", img: "resturent.jpg", link: "https://tanmoy4945-svg.github.io/resturent" },
+            { title: "Education", img: "education.jpg", link: "https://tanmoy4945-svg.github.io/education/" },
+            { title: "GYM", img: "gym.jpg", link: "https://tanmoy4945-svg.github.io/gymdemo1/" },
+            { title: "Real Estate", img: "real-estate.jpg", link: "https://tanmoy4945-svg.github.io/real-estate/" },
+            { title: "Doctor & Clinic", img: "clinic.jpg", link: "https://tanmoy4945-svg.github.io/doctor-clinic" }
+        ];
+        function renderProjects() {
+            const container = document.getElementById('demo-list');
+            container.innerHTML = demoProjects.map(p => `
+                <div class="demo-card reveal">
+                    <div class="demo-img-box">
+                        <div class="demo-img-scroll" style="background-image: url('${p.img}')"></div>
+                    </div>
+                    <div style="padding:20px; text-align:center;">
+                        <h4>${p.title}</h4>
+                        <button class="btn btn-p" onclick="window.open('${p.link}')" style="padding:8px 15px; font-size:12px; margin-top:10px;">Live Preview</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        async function loadTraining() {
-            const { data } = await mySupabase.from('trainings').select('*').or('status.eq.live,status.eq.scheduled').order('scheduled_at', { ascending: true });
-            if (data && data.length > 0) {
-                let t = data[0];
-                let timeStr = new Date(t.scheduled_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-                document.getElementById('training-content').innerHTML = `<div class="bg-indigo-900 p-8 rounded-[2.5rem] text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl border border-indigo-700 mt-10"><div><div class="flex items-center gap-2 mb-2"><span class="${t.status==='live'?'bg-red-600 animate-pulse':'bg-slate-700'} px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest">${t.status}</span><span class="text-[9px] font-bold text-indigo-300 uppercase">${timeStr}</span></div><h4 class="text-xl font-black uppercase tracking-tight">${t.title}</h4></div><a href="${t.meet_link}" target="_blank" class="bg-white text-indigo-900 px-10 py-4 rounded-2xl font-black uppercase text-xs shadow-xl transition hover:scale-105">Join Now</a></div>`;
-            }
-        }
-
-        async function loadLeaderboard() {
-            const { data } = await mySupabase.from('profiles').select('full_name, wallet_balance').order('wallet_balance', {ascending:false}).limit(5);
-            const div = document.getElementById('leaderboard-list');
-            if(data) {
-                div.innerHTML = "";
-                data.forEach((p, i) => {
-                    div.innerHTML += `<div class="flex justify-between items-center p-5 bg-slate-50 rounded-3xl border border-slate-100"><div class="flex items-center gap-4"><span class="w-8 h-8 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-[10px] font-black">${i+1}</span><p class="font-black text-[11px] uppercase text-slate-700">${p.full_name}</p></div><p class="font-black text-indigo-600 text-sm">₹${p.wallet_balance.toFixed(0)}</p></div>`;
-                });
-            }
-        }
-
-        async function loadLowerTeam(uid) {
-            const { data: team } = await mySupabase.from('profiles').select('id, full_name, phone, wallet_balance').eq('referrer_id', uid);
-            const div = document.getElementById('team-list');
-            if(team && team.length > 0) {
-                div.innerHTML = "";
-                for (const m of team) {
-                    const { data: myComm } = await mySupabase.from('transactions').select('amount').eq('worker_id', uid).like('description', `%from ${m.id}%`);
-                    let incomeFromHim = myComm ? myComm.reduce((sum, t) => sum + t.amount, 0) : 0;
-                    div.innerHTML += `<div class="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 mb-3"><div class="flex justify-between items-start"><div><p class="font-black text-[10px] text-slate-800 uppercase leading-none">${m.full_name}</p><p class="text-[8px] text-slate-400 font-bold mt-1">${m.phone}</p></div><div class="text-right"><p class="text-[7px] font-black text-indigo-400 uppercase">10% Earn</p><p class="text-[10px] font-black text-indigo-600">₹${incomeFromHim.toFixed(2)}</p></div></div></div>`;
-                }
-            }
-        }
-
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const upd = { full_name: document.getElementById('editName').value, bank_name: document.getElementById('editBank').value, account_no: document.getElementById('editAC').value, ifsc_code: document.getElementById('editIFSC').value, upi_id: document.getElementById('editUPI').value };
-            await mySupabase.from('profiles').update(upd).eq('id', curUser.id);
-            alert("Success!"); location.reload();
-        });
-
-        document.getElementById('reportForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await mySupabase.from('reports').insert([{ user_id: curUser.id, subject: document.getElementById('subject').value, message: document.getElementById('msg').value }]);
-            alert("Support Ticket Raised!"); location.reload();
-        });
-
-        function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await mySupabase.auth.signOut(); window.location.href = 'login.html'; });
-        document.getElementById('sidebarLogout').addEventListener('click', async () => { await mySupabase.auth.signOut(); window.location.href = 'login.html'; });
-        window.onload = init;
+        const WHATSAPP = "919475388085";
+        function toWA(msg) { window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank'); }
     </script>
 </body>
 </html>
